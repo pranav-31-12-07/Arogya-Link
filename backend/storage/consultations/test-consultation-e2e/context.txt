@@ -1,0 +1,117 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test-consultation-e2e
+Reconstructed At: 2026-10-31 06:37:32 UTC
+Total Events: 16
+=====================================
+
+[2026-10-31 06:35:59 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] I have had a mild headache since yesterday morning.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 06:36:11 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Thank you for sharing that with me. It's important to note that I'm an AI assistant and cannot provide a medical diagnosis. However, I can offer some general advice. Could you please tell me when the headache started and how often it occurs? Also, how severe is the pain on a scale of 1 to 10, with 1 being mild and 10 being severe?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 06:36:13 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: Hindi] I have a headache. Reply in Hindi.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 06:36:20 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[Hindi] हां, आपका दर्द क्यों आया है? यह आपके आंतों के दर्द, मन के दर्द, या दोनों के दर्द हो सकता है। आपके दर्द के आरंभ का समय और यह आपके दर्द के दृष्टिकोण की आवश्यकता क्या है?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 06:36:22 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hello, my body is feeling tired and hot.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 06:36:26 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Thank you for sharing that with me. Let's try to understand it better. Could you tell me when you first felt tired and hot, and if it has been consistent or come and gone? Also, how severe do you feel the symptoms are? And is there anything specific that makes the tiredness and heat feel better or worse?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 06:36:28 UTC]
+Mode: VIDEO
+Speaker: SYSTEM
+Type: VISUAL_OBSERVATION
+Content:
+
+
+[Language: English] Vision Analysis Observation: The image is a solid red color.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 06:36:58 UTC]
+Mode: VIDEO
+Speaker: SYSTEM
+Type: VISUAL_OBSERVATION
+Content:
+
+
+[Language: Hindi] Vision Analysis Observation: यह छवि काले रंग का है।]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+

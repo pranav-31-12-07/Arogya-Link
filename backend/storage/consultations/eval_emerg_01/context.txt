@@ -1,0 +1,24 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: eval_emerg_01
+Created At: 2026-10-31 06:04:18 UTC
+=====================================
+
+[2026-10-31 06:04:18 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+I have severe chest pain and difficulty breathing.
+
+[2026-10-31 06:04:41 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+बहुत खतरनाक संकेत हैं। आपकी चक्कर बिगड़ने वाली जानकारी दे देंगे तो बेहतर होगा।
+
+1. जब से यह शुरू हुआ है?
+2. यह ठंडा या गर्म रहा है या यह आत्मविनाशी रूप से बदलता जाता है?
+3. यह किसी विशेष कारण से बेहतर या बेहतर नहीं होता जैसे कि खाना खाने के बाद या चलने के बाद?
+4. आपको यहाँ किन अन्य लक्षण भी आते हैं?
+5. कुछ चीजें य

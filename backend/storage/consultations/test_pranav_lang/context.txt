@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_pranav_lang
+Created At: 2026-10-31 06:26:15 UTC
+=====================================
+
+[2026-10-31 06:26:15 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] hey I am Pranav
+
+[2026-10-31 06:26:22 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello Pranav! I'm here to help. Could you please tell me more about what's going on? When did it start? Is it constant or does it come and go?

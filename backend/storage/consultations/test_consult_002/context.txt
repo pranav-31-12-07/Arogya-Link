@@ -1,0 +1,22 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_consult_002
+Reconstructed At: 2026-10-31 06:00:40 UTC
+Total Events: 2
+=====================================
+
+[2026-10-31 05:59:48 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+I am feeling itchy in my throat.
+
+[2026-10-31 06:00:13 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+बहुत खासकर आपकी सुरक्षा महत्त्वपूर्ण है, इसलिए मुझे याद रखना है कि आपकी शिकायतों को ध्यान से सुनना है। इतना चाहिए, मुझे कुछ जटिल प्रश्न नहीं पूछना होगा, बल्कि आपको कुछ दिलचस्प जानकारी देना है।
+
+1. इतना चिकना शुरू कब हुआ? यह शुरू से तब तक ठीक रहा है या यह आ रहा है और जारी रहता है?
+2. इतना चिकना कितना अस्थिर है - बेहद

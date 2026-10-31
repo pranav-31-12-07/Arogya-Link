@@ -21,7 +21,9 @@ import {
   Sparkles,
   Check,
   User,
-  Bot
+  Bot,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 
 export default function TextMode() {
@@ -30,12 +32,17 @@ export default function TextMode() {
     sendMessage,
     isProcessing,
     processingText,
+    chatError,
+    setChatError,
+    isRefreshingMemory,
+    refreshFeedback,
+    refreshMemory,
     speakAiResponse,
     isAiSpeaking,
     isMicOn,
     toggleMic
   } = useConsultation();
-  const { currentUser } = useAuth();
+  const { currentUser, getIdToken } = useAuth();
 
   const [inputText, setInputText] = useState('');
   const [copiedId, setCopiedId] = useState(null);
@@ -48,12 +55,29 @@ export default function TextMode() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isProcessing]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e?.preventDefault();
     if (!inputText.trim() && !selectedFile) return;
-    sendMessage(inputText, selectedFile);
+    
+    let token = null;
+    try {
+      token = await getIdToken();
+    } catch (_) {}
+
+    const textToSend = inputText;
+    const fileToSend = selectedFile;
     setInputText('');
     setSelectedFile(null);
+
+    await sendMessage(textToSend, fileToSend, token);
+  };
+
+  const handleRefreshMemoryClick = async () => {
+    let token = null;
+    try {
+      token = await getIdToken();
+    } catch (_) {}
+    await refreshMemory(token);
   };
 
   const handleChipClick = (chipText) => {
@@ -72,72 +96,158 @@ export default function TextMode() {
     }
   };
 
+  // Helper to format AI response into readable paragraphs/lists
+  const formatAiMessage = (text) => {
+    const lines = text.split('\n');
+    const isEmergency = text.includes('108') || text.includes('112') || text.toLowerCase().includes('emergency');
+
+    return (
+      <div className="space-y-2.5">
+        {isEmergency && (
+          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-bold text-red-700 flex items-center gap-2 mb-2">
+            <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>Emergency Guidance: Contact National Emergency Services (108 / 112) immediately.</span>
+          </div>
+        )}
+        {lines.map((line, idx) => {
+          const trimmed = line.trim();
+          if (!trimmed) return null;
+          
+          if (/^(\d+\.|\*|-)\s+/.test(trimmed)) {
+            return (
+              <div key={idx} className="flex items-start gap-2 text-xs md:text-sm pl-2">
+                <span className="text-[#16865B] font-bold">•</span>
+                <span className="text-[#172B24]">{trimmed.replace(/^(\d+\.|\*|-)\s+/, '')}</span>
+              </div>
+            );
+          }
+          return (
+            <p key={idx} className="text-xs md:text-sm text-[#172B24] leading-relaxed">
+              {trimmed}
+            </p>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAF9] flex flex-col justify-between">
       <Navbar activeMode="text" />
 
       {/* Main Consultation Canvas */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-5 flex flex-col">
         
-        {/* Top Clinical Status Badge */}
-        <div className="flex justify-center mb-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E8F5EE] border border-[#c4e3d3] text-xs font-semibold text-[#116B49] shadow-xs">
+        {/* Top Clinical Status Badge & Subtle Refresh Memory Button */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E8F5EE] border border-[#c4e3d3] text-xs font-semibold text-[#116B49] shadow-xs">
             <span className="w-2 h-2 rounded-full bg-[#16865B] animate-ping" />
             <span>AI Clinical Assistant Active • 22 Regional Dialects</span>
           </div>
-        </div>
 
-        {/* Hero Welcome Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#172B24] tracking-tight">
-            How can I help you today?
-          </h1>
-          <p className="text-xs md:text-sm text-[#718078] mt-2 max-w-xl mx-auto leading-relaxed">
-            Describe how you're feeling in your own words or language. I'm here to listen, triage, and support your care.
-          </p>
-
-          {/* Suggestion Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 mt-5">
+          {/* Refresh Memory Button with icon and status feedback */}
+          <div className="flex items-center gap-2">
+            {refreshFeedback && (
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                refreshFeedback.status === 'success' ? 'bg-emerald-100 text-emerald-800' :
+                refreshFeedback.status === 'error' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'
+              }`}>
+                {refreshFeedback.message}
+              </span>
+            )}
             <button
-              onClick={() => handleChipClick('I have had fever & body ache for 2 days')}
-              className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
+              type="button"
+              id="refresh-memory-btn"
+              onClick={handleRefreshMemoryClick}
+              disabled={isRefreshingMemory}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-[#172B24] hover:text-[#16865B] shadow-xs transition active:scale-95 disabled:opacity-50"
+              title="Reconstruct and synchronize consultation context.txt from persisted memory"
             >
-              <Thermometer className="w-3.5 h-3.5 text-orange-500" />
-              <span>Fever & body ache for 2 days</span>
-            </button>
-
-            <button
-              onClick={() => handleChipClick('I experience severe stomach pain after meals')}
-              className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
-            >
-              <Activity className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Stomach pain after meals</span>
-            </button>
-
-            <button
-              onClick={() => handleChipClick('I have chest tightness and a persistent dry cough')}
-              className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
-            >
-              <Wind className="w-3.5 h-3.5 text-blue-500" />
-              <span>Chest tightness & cough</span>
-            </button>
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
-            >
-              <Upload className="w-3.5 h-3.5 text-[#16865B]" />
-              <span>Upload lab report / photo</span>
+              <RefreshCw className={`w-3.5 h-3.5 text-[#16865B] ${isRefreshingMemory ? 'animate-spin' : ''}`} />
+              <span>Refresh Memory</span>
             </button>
           </div>
         </div>
 
-        {/* Message Thread */}
-        <div className="flex-1 space-y-6 pb-28">
+        {/* Hero Welcome Header (prominent when no messages) */}
+        {messages.length === 0 && (
+          <div className="text-center my-auto py-10 animate-in fade-in zoom-in-95 duration-200">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#E8F5EE] text-[#16865B] mb-4 shadow-xs">
+              <Sparkles className="w-7 h-7" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#172B24] tracking-tight">
+              How can I help you today?
+            </h1>
+            <p className="text-xs md:text-sm text-[#718078] mt-2 max-w-xl mx-auto leading-relaxed">
+              Describe how you're feeling in your own words or language. I'm here to listen, triage, and support your care.
+            </p>
+
+            {/* Suggestion Chips */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mt-6">
+              <button
+                type="button"
+                onClick={() => handleChipClick('I have had fever & body ache for 2 days')}
+                className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
+              >
+                <Thermometer className="w-3.5 h-3.5 text-orange-500" />
+                <span>Fever & body ache for 2 days</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleChipClick('I experience stomach pain after meals')}
+                className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
+              >
+                <Activity className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Stomach pain after meals</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleChipClick('I have chest tightness and a dry cough')}
+                className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
+              >
+                <Wind className="w-3.5 h-3.5 text-blue-500" />
+                <span>Chest tightness & cough</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-3.5 py-2 rounded-full bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-xs font-medium text-[#172B24] flex items-center gap-2 transition-all shadow-xs hover:border-[#16865B]/30"
+              >
+                <Upload className="w-3.5 h-3.5 text-[#16865B]" />
+                <span>Upload lab report / photo</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Chat Error Banner (e.g. backend / Ollama unavailable) */}
+        {chatError && (
+          <div className="mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-start justify-between gap-3 animate-in fade-in">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold block mb-0.5">Connection Error</span>
+                <span>{chatError}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setChatError(null)}
+              className="text-red-600 hover:text-red-800 font-bold text-xs"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Dynamic Message Thread */}
+        <div className="flex-1 space-y-5 pb-28">
           {messages.map((msg) => {
             if (msg.sender === 'user') {
               return (
-                <div key={msg.id} className="flex flex-col items-end">
+                <div key={msg.id} className="flex flex-col items-end animate-in fade-in">
                   <div className="flex items-end gap-2.5 max-w-xl">
                     <div className="bg-[#bbf7d0]/80 text-[#172B24] px-5 py-3.5 rounded-2xl rounded-tr-xs shadow-xs text-sm leading-relaxed border border-[#86efac]/50">
                       <p>{msg.text}</p>
@@ -147,13 +257,18 @@ export default function TextMode() {
                           <span>Attachment: {msg.attachment}</span>
                         </div>
                       )}
+                      {msg.imagePreview && (
+                        <div className="mt-2 rounded-xl overflow-hidden max-w-xs border border-emerald-300 shadow-xs">
+                          <img src={msg.imagePreview} alt="Patient uploaded" className="w-full h-auto max-h-48 object-cover" />
+                        </div>
+                      )}
                     </div>
                     <div className="w-8 h-8 rounded-full bg-[#86efac] text-[#116B49] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                       <User className="w-4 h-4" />
                     </div>
                   </div>
                   <div className="text-[11px] text-[#718078] mt-1 pr-10 flex items-center gap-1">
-                    <span>{currentUser?.displayName || msg.senderName || 'Patient'}</span>
+                    <span>{currentUser?.displayName || 'You'}</span>
                     <span>•</span>
                     <span>{msg.timestamp}</span>
                     <span className="text-[#16865B]">✓✓</span>
@@ -162,9 +277,9 @@ export default function TextMode() {
               );
             }
 
-            // AI Message Card
+            // Real AI Message Card from qwen2.5:7b
             return (
-              <div key={msg.id} className="flex items-start gap-3 max-w-2xl">
+              <div key={msg.id} className="flex items-start gap-3 max-w-2xl animate-in fade-in">
                 <div className="w-9 h-9 rounded-2xl bg-[#16865B] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
                   <Bot className="w-5 h-5" />
                 </div>
@@ -174,68 +289,31 @@ export default function TextMode() {
                   <div className="flex items-center justify-between pb-3 border-b border-[#E4EBE6] mb-3">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm text-[#172B24]">
-                        {msg.senderName}
+                        {msg.senderName || 'AAROGYA LINK'}
                       </span>
-                      {msg.badge && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F5EE] text-[#116B49] border border-[#c4e3d3]">
-                          {msg.badge}
-                        </span>
-                      )}
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F5EE] text-[#116B49] border border-[#c4e3d3]">
+                        Verified Triage
+                      </span>
                     </div>
                     <span className="text-[11px] text-[#718078]">{msg.timestamp}</span>
                   </div>
 
-                  {/* Main Response Text */}
-                  <p className="text-sm text-[#172B24] leading-relaxed mb-4">
-                    {msg.text}
-                  </p>
-
-                  {/* Structured Guidance Box */}
-                  {msg.guidance && (
-                    <div className="bg-[#E8F5EE]/60 rounded-xl p-3.5 border border-[#c4e3d3]/60 mb-4 space-y-2.5">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-[#116B49] mb-1">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Primary At-Home Guidance</span>
-                      </div>
-                      {msg.guidance.map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-xs text-[#172B24]">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#16865B] shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-bold">{item.title}: </span>
-                            <span className="text-[#334155]">{item.detail}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Emergency Warning Box */}
-                  {msg.emergencyWarning && (
-                    <div className="bg-red-50/80 rounded-xl p-3.5 border border-red-200/80 mb-4 text-xs text-red-900 flex items-start gap-2.5">
-                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-red-700 block mb-0.5">
-                          Emergency Warning Indicators
-                        </span>
-                        <span>{msg.emergencyWarning}</span>{' '}
-                        <a href="tel:108" className="font-bold underline text-red-700 ml-1">
-                          Call 108 Emergency
-                        </a>
-                      </div>
-                    </div>
-                  )}
+                  {/* Formatted Model Response */}
+                  {formatAiMessage(msg.text)}
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E4EBE6]">
+                  <div className="flex flex-wrap items-center gap-2 pt-3 mt-3 border-t border-[#E4EBE6]">
                     <button
+                      type="button"
                       onClick={() => speakAiResponse(msg.text)}
                       className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#172B24] bg-gray-50 hover:bg-[#E8F5EE] border border-[#E4EBE6] flex items-center gap-1.5 transition"
                     >
                       <Volume2 className={`w-3.5 h-3.5 text-[#16865B] ${isAiSpeaking ? 'animate-pulse' : ''}`} />
-                      <span>Listen in Hindi (ऑडियो सुनें)</span>
+                      <span>Listen (ऑडियो सुनें)</span>
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => handleCopy(msg.text, msg.id)}
                       className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#172B24] bg-gray-50 hover:bg-gray-100 border border-[#E4EBE6] flex items-center gap-1.5 transition"
                     >
@@ -265,11 +343,11 @@ export default function TextMode() {
             );
           })}
 
-          {/* AI Thinking/Processing Indicator */}
+          {/* AI Thinking / Local Model Processing Indicator */}
           {isProcessing && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 animate-in fade-in">
               <div className="w-9 h-9 rounded-2xl bg-[#16865B] text-white flex items-center justify-center shrink-0">
-                <Bot className="w-5 h-5" />
+                <Bot className="w-5 h-5 animate-pulse" />
               </div>
               <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#E4EBE6] shadow-xs text-xs font-medium text-[#718078]">
                 <div className="flex items-center gap-1">
@@ -277,7 +355,7 @@ export default function TextMode() {
                   <span className="w-1.5 h-1.5 rounded-full bg-[#16865B] animate-bounce [animation-delay:0.2s]" />
                   <span className="w-1.5 h-1.5 rounded-full bg-[#16865B] animate-bounce [animation-delay:0.4s]" />
                 </div>
-                <span>{processingText || 'Analyzing symptoms & preparing clinical guidance...'}</span>
+                <span>{processingText || 'AAROGYA LINK is processing with local AI...'}</span>
               </div>
             </div>
           )}
@@ -294,6 +372,7 @@ export default function TextMode() {
             <div className="mb-2 px-4 py-1.5 rounded-xl bg-white border border-[#E4EBE6] text-xs flex items-center justify-between text-[#172B24] shadow-xs">
               <span className="truncate">Attached: {selectedFile.name}</span>
               <button
+                type="button"
                 onClick={() => setSelectedFile(null)}
                 className="text-red-500 hover:text-red-700 font-bold ml-2"
               >
@@ -353,7 +432,7 @@ export default function TextMode() {
             <button
               type="submit"
               id="chat-send-btn"
-              disabled={!inputText.trim() && !selectedFile}
+              disabled={(!inputText.trim() && !selectedFile) || isProcessing}
               className="w-10 h-10 rounded-full bg-[#16865B] hover:bg-[#116B49] text-white flex items-center justify-center shadow-sm disabled:opacity-40 transition active:scale-95"
               title="Send symptoms"
             >

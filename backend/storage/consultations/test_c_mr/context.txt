@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_c_mr
+Created At: 2026-10-31 06:29:29 UTC
+=====================================
+
+[2026-10-31 06:29:29 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: Marathi] मला डोकेदुखी आहे.
+
+[2026-10-31 06:29:40 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[Marathi] हा मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत. मुळे आहे माराठी भाषेत.

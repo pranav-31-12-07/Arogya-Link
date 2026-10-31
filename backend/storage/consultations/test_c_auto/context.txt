@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_c_auto
+Created At: 2026-10-31 06:29:42 UTC
+=====================================
+
+[2026-10-31 06:29:42 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: Hinglish] Mujhe headache ho raha hai.
+
+[2026-10-31 06:29:45 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[Hinglish] Aapko kab se gale me dard ho raha hai? Hain aapki dard se ek特殊的 रूप में भी जानते हैं?

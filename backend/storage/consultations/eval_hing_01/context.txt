@@ -1,0 +1,23 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: eval_hing_01
+Created At: 2026-10-31 06:05:07 UTC
+=====================================
+
+[2026-10-31 06:05:07 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+Mujhe kal se headache ho raha hai.
+
+[2026-10-31 06:05:30 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+मुझे याद आ रहा है कि आपको कल से गले के ऊपरी हिस्से में डर्हा आरका है। इसके बारे में कुछ और जानकारी चाहिए:
+
+1. डर्हा कब से शुरू हुई थी?
+2. डर्हा का तीव्रता कैसी है? यह ठंडी या गर्म डर्हा है?
+3. डर्हा कहाँ से आ रही है? यह कहाँ से फैल रही है?
+4. किसी अन्य समस्या या लक्षण के साथ डर्हा आ रहा है? जैसे उबाल, फुराहट, आस्थाही या ग

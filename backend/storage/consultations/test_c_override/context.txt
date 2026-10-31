@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_c_override
+Created At: 2026-10-31 06:29:47 UTC
+=====================================
+
+[2026-10-31 06:29:47 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: Hindi] I have a headache. Reply in Hindi.
+
+[2026-10-31 06:29:59 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[Hindi] हां, मेरे दोस्तों, आपकी आंखों की दर्द लगती है? यह कैसे शुरू हुई और इसे कितने समय तक जारी रह रहा है? आंखों के अन्य भागों में दर्द लगता है या आंखों के बाहर दर्द लगता है? आंखों के लिए किस व्यक्ति का उपयोग करें? आंखों के लिए किस प्रकार की चेतना लगती है?

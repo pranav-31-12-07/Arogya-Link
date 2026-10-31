@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Navbar from '../components/common/Navbar';
 import { useConsultation, DOCTORS } from '../contexts/ConsultationContext';
+import { useAuth } from '../contexts/AuthContext';
 import {
   Mic,
   MicOff,
@@ -8,7 +9,9 @@ import {
   VideoOff,
   ImagePlus,
   Captions,
-  Volume2
+  Volume2,
+  Scan,
+  Loader2
 } from 'lucide-react';
 
 export default function VirtualDoctor() {
@@ -25,13 +28,21 @@ export default function VirtualDoctor() {
     patientCameraStream,
     isAiSpeaking,
     speakAiResponse,
-    currentSubtitle
+    currentSubtitle,
+    setCurrentSubtitle,
+    selectedLanguage,
+    analyzeVision,
+    isProcessing,
+    processingText
   } = useConsultation();
+  const { getIdToken } = useAuth();
 
   const [subtitleLang, setSubtitleLang] = useState('en');
   const [uploadFeedback, setUploadFeedback] = useState('');
+  const [cooldown, setCooldown] = useState(0);
   const patientVideoRef = useRef(null);
   const fileInputRef = useRef(null);
+  const lastCaptureTimeRef = useRef(0);
 
   // Attach webcam stream to patient PiP video element when camera is active
   useEffect(() => {
@@ -44,11 +55,91 @@ export default function VirtualDoctor() {
     }
   }, [isCameraOn, patientCameraStream]);
 
-  const handleImageUpload = (e) => {
+  // Cooldown countdown timer for camera frame throttling
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  const handleImageUpload = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setUploadFeedback(`Uploaded "${file.name}"`);
+      setUploadFeedback(`Analyzing "${file.name}" with Qwen2.5-VL...`);
+      try {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            let token = null;
+            try { token = await getIdToken(); } catch (_) {}
+            const res = await analyzeVision(
+              reader.result,
+              'Please provide a preliminary clinical triage observation of this uploaded medical image in the active consultation language.',
+              token
+            );
+            setUploadFeedback('Observation updated in consultation subtitles');
+            if (isMicOn && res?.observation) {
+              speakAiResponse(res.observation);
+            }
+            setTimeout(() => setUploadFeedback(''), 4000);
+          } catch (err) {
+            setUploadFeedback(`Analysis error: ${err.message || 'Service unavailable'}`);
+            setTimeout(() => setUploadFeedback(''), 5000);
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (err) {
+        setUploadFeedback('Could not read image file.');
+        setTimeout(() => setUploadFeedback(''), 3000);
+      }
+    }
+  };
+
+  const handleScanFrame = async () => {
+    if (cooldown > 0 || isProcessing) return;
+    if (!isCameraOn || !patientVideoRef.current) {
+      setUploadFeedback('Please turn on your camera first.');
       setTimeout(() => setUploadFeedback(''), 3000);
+      return;
+    }
+
+    const video = patientVideoRef.current;
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      setUploadFeedback('Camera feed not ready yet.');
+      setTimeout(() => setUploadFeedback(''), 3000);
+      return;
+    }
+
+    try {
+      setCooldown(15); // 15-second throttle cooldown to protect system & GPU
+      setUploadFeedback('Capturing camera frame for preliminary observation...');
+
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.min(video.videoWidth, 640);
+      canvas.height = Math.min(video.videoHeight, 480);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const frameBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+      let token = null;
+      try { token = await getIdToken(); } catch (_) {}
+
+      const res = await analyzeVision(
+        frameBase64,
+        'Please describe visible clinical observations (e.g., skin rash, eye redness, facial swelling) in the active response language. Maintain triage precautions.',
+        token
+      );
+
+      setUploadFeedback('Observation recorded from camera frame');
+      if (isMicOn && res?.observation) {
+        speakAiResponse(res.observation);
+      }
+      setTimeout(() => setUploadFeedback(''), 4000);
+    } catch (err) {
+      setUploadFeedback(`Frame analysis error: ${err.message || 'Service unavailable'}`);
+      setTimeout(() => setUploadFeedback(''), 5000);
     }
   };
 
@@ -182,20 +273,44 @@ export default function VirtualDoctor() {
               {/* 3. Small Floating Patient Camera Preview in the top-right corner */}
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6 w-28 sm:w-36 md:w-44 aspect-[4/3] rounded-2xl overflow-hidden border-2 border-white/90 shadow-2xl bg-zinc-800 backdrop-blur-md transition-all">
                 {isCameraOn ? (
-                  patientCameraStream ? (
-                    <video
-                      ref={patientVideoRef}
-                      autoPlay
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-800 text-white p-2 text-center">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mb-1" />
-                      <span className="text-[10px] font-semibold">Camera Active</span>
-                    </div>
-                  )
+                  <>
+                    {patientCameraStream ? (
+                      <video
+                        ref={patientVideoRef}
+                        autoPlay
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-800 text-white p-2 text-center">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mb-1" />
+                        <span className="text-[10px] font-semibold">Camera Active</span>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      id="scan-camera-frame-btn"
+                      onClick={handleScanFrame}
+                      disabled={cooldown > 0 || isProcessing}
+                      className="absolute bottom-1.5 inset-x-1.5 py-1 px-1.5 rounded-lg bg-black/70 hover:bg-black/90 backdrop-blur-md text-[10px] font-semibold text-white flex items-center justify-center gap-1 transition-all disabled:opacity-60 shadow-xs active:scale-95"
+                      title="Analyze frame with Qwen2.5-VL 3B"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
+                          <span>Analyzing...</span>
+                        </>
+                      ) : cooldown > 0 ? (
+                        <span>Wait {cooldown}s</span>
+                      ) : (
+                        <>
+                          <Scan className="w-3 h-3 text-emerald-400" />
+                          <span>Scan Frame</span>
+                        </>
+                      )}
+                    </button>
+                  </>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-900/90 text-white p-2 text-center">
                     <VideoOff className="w-5 h-5 text-zinc-400 mb-1" />

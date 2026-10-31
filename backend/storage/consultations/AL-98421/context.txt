@@ -1,0 +1,95 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: AL-98421
+Reconstructed At: 2026-10-31 06:08:35 UTC
+Total Events: 4
+=====================================
+
+[2026-10-31 06:06:46 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+Hey
+
+[2026-10-31 06:06:54 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+हैलो! मुझे लगता है आपकी किसी भी स्वास्थ्य समस्या के बारे में बात करनी है? कैसे मदद कर सकता हूँ?
+
+[2026-10-31 06:07:23 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+I am feeling pain in my right foot
+
+[2026-10-31 06:07:45 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+हाँ, बताएं गए हैं। यह बारिश के बाद हुआ है या कुछ अन्य वजह से?
+
+1. जब यह शुरू हुआ?
+2. इसका तीव्रता कितनी है? डरावना या दर्ददायी?
+3. यह किस भाग में है और यह कहाँ भी फैल रहा है?
+4. किसी दूसरी दर्द के साथ किसी भी संबंधित लक्षण हैं?
+5. कुछ विशेष चीजें या गतिविधियां यह बेहतर या बुरा करती हैं?
+
+[2026-10-31 06:08:42 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+Hey
+
+[2026-10-31 06:09:00 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+हैलो! आप कैसे हैं? यदि आप अपने डॉक्टर से बात करना चाहते हैं या किसी स्वास्थ्य समस्या के बारे में बात करना चाहते हैं, मैं आपकी मदद कर सकता हूँ। अगर आपकी किसी विशेष स्वास्थ्य समस्या के बारे में बात करना चाहते हैं, कृपया बताएं।
+
+[2026-10-31 06:17:12 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+hey I am Pranav
+
+[2026-10-31 06:17:36 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+हैलो प्रनव! आपका स्वागत है। यदि आपको किसी विशेष स्वास्थ्य समस्या के बारे में बात करना चाहिए, या किसी दर्द के बारे में बात करना चाहिए, कृपया बताएं। आपकी स्वास्थ्य से बात करने में मदद कर सकता हूँ।
+
+[2026-10-31 06:36:29 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey
+
+[2026-10-31 06:36:58 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] हाँ, आप कैसे हैं?
+
+[2026-10-31 06:37:36 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I am having a pain in my right feet, can you also talk in English
+
+[2026-10-31 06:37:47 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] हाँ, आपका स्वागत है। यदि आपको किसी विशेष स्वास्थ्य समस्या के बारे में बात करना चाहिए, या किसी दर्द के बारे में बात करना चाहिए, कृपया बताएं। आपकी स्वास्थ्य से बात करने में मदद कर सकता हूँ।

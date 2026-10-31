@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_c_hi
+Created At: 2026-10-31 06:29:22 UTC
+=====================================
+
+[2026-10-31 06:29:22 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: Hindi] मुझे सिरदर्द है।
+
+[2026-10-31 06:29:27 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[Hindi] हां, आपकी सिरदर्द कैसे है? यह कम या बड़ा है? इसे खाना खाने के साथ या नहीं खाने के साथ बढ़ता है?

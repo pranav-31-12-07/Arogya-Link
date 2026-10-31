@@ -1,0 +1,27 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_consult_001
+Created At: 2026-10-31 05:52:40 UTC
+=====================================
+
+[2026-10-31 05:52:40 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+I am feeling itchy in my throat.
+
+[2026-10-31 05:56:45 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+I am feeling itchy in my throat.
+
+[2026-10-31 05:58:29 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+महसूस हुआ कि आपकी गले में इत्ता आ रही है। यह कुछ दिनों से आ रही है या अचेतन से? इत्ता शिकारी है या ठंडा या गर्म रही है? इत्ता कहाँ से आ रही है और यह कहाँ चल रही है? आपकी गले में किसी और संबंधित लक्षण भी हैं?
+
+यदि इत्ता बदलाव करने वाली कुछ चीजों से जुड़ी है, जैसे खाना, गर्म जल या ठंडा जल, तो बताएं। आपकी गले में किसी अन्य रोग की शुरुआत भी है जैसे जैविक रोग, डायरेटिव, या किसी और इत्ता का कारण हो सकता है।

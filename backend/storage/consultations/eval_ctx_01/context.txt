@@ -1,0 +1,41 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: eval_ctx_01
+Reconstructed At: 2026-10-31 06:06:11 UTC
+Total Events: 4
+=====================================
+
+[2026-10-31 06:05:32 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+I have a sore throat.
+
+[2026-10-31 06:05:56 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+मुझे ठंडा गला है, यह आपकी स्थिति बेहतर बनाने में मदद कर सकता है। कृपया निम्नलिखित प्रश्नों का जवाब दें:
+
+1. गला की दर्द कब से शुरू हुई है?
+2. गला की दर्द कितनी गंभीर है (लघुतम, मध्यम, गंभीर)?
+3. दर्द कहाँ से लॉक हो रहा है? या यह कहाँ से फैल रहा है?
+4. दर्द के साथ किन भी अन्य साइमन्ट की तरफ़ आपको लगा है?
+5. कुछ चीज़ें गला की दर्द
+
+[2026-10-31 06:05:58 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+Since yesterday evening.
+
+[2026-10-31 06:06:09 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+6. गला की दर्द किसी चीज़ से बेहतर या गंभीर हो रही है?
+
+कृपया इन जानकारियों को देखते हुए अपनी स्थिति की अधिक जानकारी दें ताकि मैं आपकी सहायता कर सकूं।

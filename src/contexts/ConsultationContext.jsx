@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { saveConsultationOffline, saveMessagesOffline, getConsultationOffline, getMessagesOffline } from '../utils/indexedDb';
+import { saveConsultationOffline, saveMessagesOffline } from '../utils/indexedDb';
 
 const ConsultationContext = createContext(null);
+
+const BACKEND_URL = 'http://localhost:8000/api/v1';
 
 export const DOCTORS = {
   male: {
@@ -30,48 +32,38 @@ export const DOCTORS = {
   }
 };
 
-const INITIAL_MESSAGES = [
-  {
-    id: 'msg-1',
-    sender: 'user',
-    senderName: 'Ramesh K.',
-    timestamp: '10:24 AM',
-    text: 'Namaste doctor, I have had a mild fever (100.4°F) and throat soreness since yesterday evening. Should I take paracetamol?'
-  },
-  {
-    id: 'msg-2',
-    sender: 'ai',
-    senderName: 'Aarogya Clinical AI',
-    badge: 'Verified Triage',
-    timestamp: '10:25 AM',
-    text: 'Namaste Ramesh ji. I understand you are experiencing a mild fever (100.4°F) and a sore throat. This commonly indicates an early viral respiratory response.',
-    guidance: [
-      { title: 'Warm Saline Gargles', detail: '2 to 3 times daily with lukewarm water and a pinch of salt to alleviate local throat irritation.' },
-      { title: 'Hydration', detail: 'Drink plenty of warm water, tulsi/ginger tea, or clear soups to maintain fluid levels.' },
-      { title: 'Temperature Monitoring', detail: 'Track temperature every 4-6 hours. Take paracetamol (500mg) only if temperature exceeds 100°F or with body pain.' }
-    ],
-    emergencyWarning: 'If you experience severe shortness of breath, sudden chest discomfort, fever crossing 102°F that doesn\'t reduce, or extreme fatigue, seek immediate medical care or tap Call 108 Emergency.',
-    hindiTranslation: 'नमस्ते रमेश जी। मैं समझ सकता हूँ कि आपको हल्का बुखार और गले में खराश है। गुनगुने नमक के पानी से गरारे करें और पर्याप्त तरल पदार्थ लें।'
-  },
-  {
-    id: 'msg-3',
-    sender: 'user',
-    senderName: 'Ramesh K.',
-    timestamp: '10:27 AM',
-    text: 'I am also taking my routine blood pressure medicine (Amlodipine 5mg). Does that interact?'
-  }
-];
-
 export function ConsultationProvider({ children }) {
   const [consultationId] = useState('AL-98421');
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  
+  // Clean initial state: No hardcoded patient messages or fake histories!
+  const [messages, setMessages] = useState([]);
+  const [chatError, setChatError] = useState(null);
+
   const [selectedDoctorGender, setSelectedDoctorGender] = useState('male');
   const [isMicOn, setIsMicOn] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingText, setProcessingText] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('Hindi');
+  
+  // Refresh Memory button state
+  const [isRefreshingMemory, setIsRefreshingMemory] = useState(false);
+  const [refreshFeedback, setRefreshFeedback] = useState(null);
+
+  const [selectedLanguage, setSelectedLanguageState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('aarogya_selected_language') || 'English';
+    }
+    return 'English';
+  });
+
+  const setSelectedLanguage = (lang) => {
+    setSelectedLanguageState(lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('aarogya_selected_language', lang);
+    }
+  };
+
   const [isOnline, setIsOnline] = useState(typeof window !== 'undefined' ? window.navigator.onLine : true);
   const [patientCameraStream, setPatientCameraStream] = useState(null);
   const [attachments, setAttachments] = useState([]);
@@ -79,11 +71,11 @@ export function ConsultationProvider({ children }) {
   
   // Current subtitles for Virtual Doctor
   const [currentSubtitle, setCurrentSubtitle] = useState({
-    english: '“I can see the mild redness in your throat. Please stay hydrated and rest today. Let us check your temperature now.”',
-    hindi: '“मैं आपके गले में हल्का लालपन देख सकता हूँ। कृपया पानी पिएं और आराम करें...”'
+    english: '“I can see the mild redness in your throat. Please stay hydrated and rest today.”',
+    hindi: '“मैं आपके गले में हल्का लालपन देख सकता हूँ। कृपया पानी पिएं और आराम करें।”'
   });
 
-  // Clinical triage summary cards
+  // Clinical triage summary
   const [vitals] = useState({
     temperature: '99.1 °F',
     tempStatus: 'Mild Fever',
@@ -91,11 +83,7 @@ export function ConsultationProvider({ children }) {
     spo2Status: 'Optimal'
   });
 
-  const [symptoms] = useState([
-    'Mild Pharyngitis',
-    'Generalized Body Ache',
-    'No Respiratory Distress'
-  ]);
+  const [symptoms, setSymptoms] = useState([]);
 
   // Speech synthesis reference
   const speechRef = useRef(null);
@@ -124,7 +112,9 @@ export function ConsultationProvider({ children }) {
       symptoms
     }).catch(console.error);
 
-    saveMessagesOffline(messages).catch(console.error);
+    if (messages.length > 0) {
+      saveMessagesOffline(messages).catch(console.error);
+    }
   }, [consultationId, messages, selectedDoctorGender, selectedLanguage, vitals, symptoms]);
 
   /**
@@ -164,7 +154,7 @@ export function ConsultationProvider({ children }) {
     };
   }
 
-  // Camera toggle handler using browser MediaDevices API
+  // Camera toggle handler
   const toggleCamera = async () => {
     if (isCameraOn) {
       if (patientCameraStream) {
@@ -182,12 +172,10 @@ export function ConsultationProvider({ children }) {
           setPatientCameraStream(stream);
           setIsCameraOn(true);
         } else {
-          // Fallback if browser media is restricted
           setIsCameraOn(true);
         }
       } catch (err) {
         console.warn('Camera access not granted or not available:', err);
-        // Still toggle camera indicator with simulated preview for testing
         setIsCameraOn(true);
       }
     }
@@ -223,7 +211,6 @@ export function ConsultationProvider({ children }) {
       speechRef.current = utterance;
       window.speechSynthesis.speak(utterance);
     } else {
-      // Simulation fallback if speechSynthesis is not available
       setIsAiSpeaking(true);
       setTimeout(() => {
         setIsAiSpeaking(false);
@@ -238,52 +225,198 @@ export function ConsultationProvider({ children }) {
     setIsAiSpeaking(false);
   };
 
-  // Send a new message in consultation
-  const sendMessage = async (text, attachment = null) => {
-    if (!text.trim() && !attachment) return;
+  /**
+   * Helper to convert File/Blob to base64 Data URL
+   */
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
+  /**
+   * Send a new message to the real FastAPI backend + Ollama Qwen2.5-VL 3B model
+   */
+  const sendMessage = async (text, attachment = null, token = null) => {
+    if (!text?.trim() && !attachment) return;
+
+    setChatError(null);
+
+    let imageBase64Data = null;
+    let attachmentName = null;
+    if (attachment) {
+      if (typeof attachment === 'string') {
+        imageBase64Data = attachment;
+        attachmentName = 'Image Attachment';
+      } else if (attachment instanceof File || attachment instanceof Blob) {
+        attachmentName = attachment.name || 'Image Attachment';
+        try {
+          imageBase64Data = await fileToBase64(attachment);
+        } catch (fErr) {
+          console.warn('Could not read image file as base64:', fErr);
+        }
+      }
+    }
 
     const userMsg = {
       id: `msg-${Date.now()}`,
       sender: 'user',
       senderName: 'You (Patient)',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      text: text.trim(),
-      attachment: attachment ? attachment.name : null
+      text: (text || '').trim(),
+      attachment: attachmentName,
+      imagePreview: imageBase64Data
     };
 
     setMessages((prev) => [...prev, userMsg]);
     setIsProcessing(true);
-    setProcessingText('Checking pharmacological interactions & clinical triage...');
+    setProcessingText('AAROGYA LINK is analyzing clinical information with Qwen2.5-VL...');
 
-    // Simulate AI clinical triage response for demo
-    setTimeout(() => {
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(`${BACKEND_URL}/chat/message`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          consultation_id: consultationId,
+          message: (text || '').trim() || 'Please examine the attached image.',
+          mode: 'text',
+          language: selectedLanguage,
+          image_base64: imageBase64Data
+        })
+      });
+
+      if (!res.ok) {
+        let errDetail = 'Failed to generate response.';
+        try {
+          const errData = await res.json();
+          errDetail = errData.detail || errDetail;
+        } catch (_) {}
+        throw new Error(errDetail);
+      }
+
+      const data = await res.json();
+
       const aiReply = {
-        id: `msg-${Date.now() + 1}`,
+        id: data.message_id || `msg-${Date.now() + 1}`,
         sender: 'ai',
-        senderName: 'Aarogya Clinical AI',
+        senderName: data.senderName || 'AAROGYA LINK',
         badge: 'Verified Triage',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: `Regarding your query: "${text}". Amlodipine (5mg) is a calcium channel blocker used for hypertension. Short-term paracetamol use for fever does not have clinically significant adverse interactions with Amlodipine. However, avoid NSAIDs like ibuprofen without physician approval as they can elevate blood pressure.`,
-        guidance: [
-          { title: 'Blood Pressure Monitoring', detail: 'Continue routine Amlodipine schedule. Take BP reading once daily while unwell.' },
-          { title: 'Safe Antipyretic', detail: 'Paracetamol is preferred over NSAIDs for fever reduction in hypertensive individuals.' }
-        ],
-        emergencyWarning: 'If systolic BP exceeds 160 mmHg or you notice swelling/dizziness along with high fever, reach out to your primary medical center immediately.'
+        timestamp: data.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: data.text
       };
 
       setMessages((prev) => [...prev, aiReply]);
-      setIsProcessing(false);
-      setProcessingText('');
-
-      // Update subtitle in Virtual Doctor
+      
+      // Update subtitle in Virtual Doctor Mode for cross-mode continuity
       setCurrentSubtitle({
-        english: `“Regarding your query, Amlodipine has no adverse interaction with standard paracetamol. Maintain adequate hydration and rest.”`,
-        hindi: `“एमलोडिपिन के साथ पैरासिटामोल का कोई प्रतिकूल प्रभाव नहीं है। पर्याप्त पानी पिएं और आराम करें।”`
+        english: data.text,
+        hindi: data.text
       });
 
-      // If Virtual Doctor mode is open or mic is active, speak the response
-      speakAiResponse(aiReply.text);
-    }, 2000);
+      // If voice is active or user requested speech, speak response
+      if (isMicOn) {
+        speakAiResponse(data.text);
+      }
+
+      return aiReply;
+
+    } catch (err) {
+      console.error('Chat error:', err);
+      setChatError(err.message || 'Unable to connect to AAROGYA LINK AI service.');
+    } finally {
+      setIsProcessing(false);
+      setProcessingText('');
+    }
+  };
+
+  /**
+   * Analyze visual media or camera frame directly with Qwen2.5-VL 3B
+   */
+  const analyzeVision = async (imageBase64, promptText = 'Please provide a preliminary clinical triage observation of this image.', token = null) => {
+    if (!imageBase64) return;
+    setIsProcessing(true);
+    setProcessingText('Analyzing visual frame with Qwen2.5-VL 3B...');
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${BACKEND_URL}/vision/analyze`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          consultation_id: consultationId,
+          image_base64: imageBase64,
+          prompt: promptText,
+          language: selectedLanguage
+        })
+      });
+
+      if (!res.ok) {
+        let errDetail = 'Vision analysis failed.';
+        try {
+          const errData = await res.json();
+          errDetail = errData.detail || errDetail;
+        } catch (_) {}
+        throw new Error(errDetail);
+      }
+
+      const data = await res.json();
+      setCurrentSubtitle({
+        english: data.observation,
+        hindi: data.observation
+      });
+      return data;
+    } catch (err) {
+      console.error('Vision analysis error:', err);
+      throw err;
+    } finally {
+      setIsProcessing(false);
+      setProcessingText('');
+    }
+  };
+
+  /**
+   * Rebuilds the consultation's context.txt from persisted records in FastAPI
+   */
+  const refreshMemory = async (token = null) => {
+    if (isRefreshingMemory) return;
+
+    setIsRefreshingMemory(true);
+    setRefreshFeedback({ status: 'loading', message: 'Refreshing consultation memory...' });
+
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(`${BACKEND_URL}/consultations/${consultationId}/refresh-memory`, {
+        method: 'POST',
+        headers
+      });
+
+      if (!res.ok) {
+        throw new Error('Backend failed to refresh memory.');
+      }
+
+      const data = await res.json();
+      setRefreshFeedback({ status: 'success', message: data.message || 'Memory refreshed successfully.' });
+      setTimeout(() => setRefreshFeedback(null), 4000);
+    } catch (err) {
+      console.error('Refresh memory error:', err);
+      setRefreshFeedback({ status: 'error', message: 'Unable to refresh memory. Please try again.' });
+      setTimeout(() => setRefreshFeedback(null), 5000);
+    } finally {
+      setIsRefreshingMemory(false);
+    }
   };
 
   return (
@@ -292,6 +425,8 @@ export function ConsultationProvider({ children }) {
         consultationId,
         messages,
         setMessages,
+        chatError,
+        setChatError,
         selectedDoctorGender,
         setSelectedDoctorGender,
         doctor,
@@ -309,6 +444,9 @@ export function ConsultationProvider({ children }) {
         stopAiSpeech,
         isProcessing,
         processingText,
+        isRefreshingMemory,
+        refreshFeedback,
+        refreshMemory,
         selectedLanguage,
         setSelectedLanguage,
         isOnline,
@@ -320,7 +458,8 @@ export function ConsultationProvider({ children }) {
         setCurrentSubtitle,
         vitals,
         symptoms,
-        sendMessage
+        sendMessage,
+        analyzeVision
       }}
     >
       {children}
