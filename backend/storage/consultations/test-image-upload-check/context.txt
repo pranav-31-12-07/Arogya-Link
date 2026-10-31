@@ -1,0 +1,11 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test-image-upload-check
+Created At: 2026-10-31 11:53:19 UTC
+=====================================
+
+[2026-10-31 11:53:19 UTC]
+Mode: VIDEO
+Speaker: SYSTEM
+Type: VISUAL_OBSERVATION
+Content:
+[Language: English] Vision Analysis Observation: I'm sorry, but I'm unable to see or analyze images. I can only provide information based on text input. If you have any other questions or need assistance with a different topic, feel free to ask!

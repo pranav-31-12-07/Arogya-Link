@@ -11,7 +11,12 @@ import {
   Captions,
   Volume2,
   Scan,
-  Loader2
+  Loader2,
+  Upload,
+  CheckCircle2,
+  Trash2,
+  Paperclip,
+  Sparkles
 } from 'lucide-react';
 
 export default function VirtualDoctor() {
@@ -33,15 +38,22 @@ export default function VirtualDoctor() {
     selectedLanguage,
     analyzeVision,
     isProcessing,
-    processingText
+    processingText,
+    isPatientSpeaking,
+    patientSpeechTranscript,
+    speechRecognitionSupported,
+    sendMessage
   } = useConsultation();
   const { getIdToken } = useAuth();
 
   const [subtitleLang, setSubtitleLang] = useState('en');
   const [uploadFeedback, setUploadFeedback] = useState('');
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const patientVideoRef = useRef(null);
   const fileInputRef = useRef(null);
+  const sidebarFileInputRef = useRef(null);
   const lastCaptureTimeRef = useRef(0);
 
   // Attach webcam stream to patient PiP video element when camera is active
@@ -64,37 +76,84 @@ export default function VirtualDoctor() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  const handleImageUpload = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setUploadFeedback(`Analyzing "${file.name}" with Qwen2.5-VL...`);
-      try {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          try {
-            let token = null;
-            try { token = await getIdToken(); } catch (_) {}
-            const res = await analyzeVision(
-              reader.result,
-              'Please provide a preliminary clinical triage observation of this uploaded medical image in the active consultation language.',
-              token
-            );
-            setUploadFeedback('Observation updated in consultation subtitles');
-            if (isMicOn && res?.observation) {
-              speakAiResponse(res.observation);
-            }
-            setTimeout(() => setUploadFeedback(''), 4000);
-          } catch (err) {
-            setUploadFeedback(`Analysis error: ${err.message || 'Service unavailable'}`);
-            setTimeout(() => setUploadFeedback(''), 5000);
-          }
-        };
-        reader.readAsDataURL(file);
-      } catch (err) {
-        setUploadFeedback('Could not read image file.');
-        setTimeout(() => setUploadFeedback(''), 3000);
-      }
+  // Process uploaded image file for Qwen2.5-VL 3B visual triage
+  const handleImageFile = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setUploadFeedback('Please upload an image file (PNG, JPG, WebP).');
+      setTimeout(() => setUploadFeedback(''), 4000);
+      return;
     }
+
+    setUploadFeedback(`Analyzing "${file.name}" with Qwen2.5-VL...`);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result;
+        setUploadedImage({
+          name: file.name,
+          preview: base64Data,
+          size: file.size
+        });
+
+        try {
+          let token = null;
+          try { token = await getIdToken(); } catch (_) {}
+
+          const res = await analyzeVision(
+            base64Data,
+            'Please provide a preliminary clinical triage observation of this uploaded medical image in the active consultation language. Give your observation in a single conversational paragraph.',
+            token
+          );
+
+          setUploadFeedback('Doctor reviewed image and speaking observation...');
+          if (res?.observation) {
+            speakAiResponse(res.observation);
+          }
+          setTimeout(() => setUploadFeedback(''), 4000);
+        } catch (err) {
+          setUploadFeedback(`Analysis error: ${err.message || 'Service unavailable'}`);
+          setTimeout(() => setUploadFeedback(''), 5000);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setUploadFeedback('Could not read image file.');
+      setTimeout(() => setUploadFeedback(''), 3000);
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleImageFile(e.target.files[0]);
+      e.target.value = '';
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleClearImage = () => {
+    setUploadedImage(null);
+    setUploadFeedback('');
   };
 
   const handleScanFrame = async () => {
@@ -228,6 +287,100 @@ export default function VirtualDoctor() {
                 </span>
               </button>
             </div>
+
+            <hr className="w-full border-[#E4EBE6] my-6" />
+
+            {/* Dedicated Medical Image / Lab Report Upload Section */}
+            <div className="w-full flex flex-col">
+              <div className="flex items-center gap-1.5 mb-2 text-[#172B24]">
+                <Upload className="w-4 h-4 text-[#16865B]" />
+                <h3 className="text-xs font-bold uppercase tracking-wider">
+                  Visual Triage
+                </h3>
+              </div>
+              <p className="text-[11px] text-[#718078] leading-tight mb-3">
+                Upload a photo or medical report for instant Qwen2.5-VL clinical observation.
+              </p>
+
+              <input
+                type="file"
+                ref={sidebarFileInputRef}
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+
+              {!uploadedImage ? (
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => sidebarFileInputRef.current?.click()}
+                  className={`w-full p-4 rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center text-center group ${
+                    isDragging
+                      ? 'border-[#16865B] bg-[#E8F5EE]/60 scale-[1.02]'
+                      : 'border-[#E4EBE6] hover:border-[#16865B]/60 bg-[#F8FAF9] hover:bg-[#E8F5EE]/30'
+                  }`}
+                >
+                  <div className="w-9 h-9 rounded-xl bg-white border border-[#E4EBE6] group-hover:border-[#16865B]/40 flex items-center justify-center text-[#16865B] shadow-xs mb-2 transition-colors">
+                    <ImagePlus className="w-5 h-5" />
+                  </div>
+                  <span className="text-xs font-bold text-[#172B24] group-hover:text-[#16865B]">
+                    Upload Image
+                  </span>
+                  <span className="text-[10px] text-[#718078] mt-0.5">
+                    Drag & drop or browse
+                  </span>
+                  <span className="text-[9px] text-[#9CA3AF] mt-1.5 font-medium">
+                    PNG, JPG, WebP
+                  </span>
+                </div>
+              ) : (
+                <div className="w-full bg-[#F8FAF9] border border-[#E4EBE6] rounded-2xl p-2.5 flex flex-col gap-2 animate-in fade-in">
+                  <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-zinc-900 border border-black/10">
+                    <img
+                      src={uploadedImage.preview}
+                      alt="Uploaded image"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleClearImage}
+                      className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/70 hover:bg-red-600 text-white flex items-center justify-center text-xs font-bold transition-colors"
+                      title="Remove image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="px-1">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-[#172B24]">
+                      <span className="truncate max-w-[100px]" title={uploadedImage.name}>
+                        {uploadedImage.name}
+                      </span>
+                      {isProcessing ? (
+                        <span className="text-[10px] text-amber-600 font-bold flex items-center gap-1">
+                          <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                          Analyzing
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
+                          <CheckCircle2 className="w-2.5 h-2.5" />
+                          Reviewed
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => sidebarFileInputRef.current?.click()}
+                    className="w-full py-1.5 px-2 rounded-xl text-[11px] font-semibold text-[#116B49] bg-[#E8F5EE] hover:bg-[#d5eee0] border border-[#c4e3d3] flex items-center justify-center gap-1 transition"
+                  >
+                    <Upload className="w-3 h-3" />
+                    <span>Upload New Photo</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </aside>
 
           {/* 2. Dominant Central Video Screen (occupying most screen space) */}
@@ -260,12 +413,34 @@ export default function VirtualDoctor() {
               )}
 
               {/* Top-Left Video Status Badges */}
-              <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 border border-white/10 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-[#16865B] animate-pulse" />
-                  HD Video
-                </span>
-                <span className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-white text-xs font-medium border border-white/10 shadow-xs flex items-center gap-1">
+              <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex flex-wrap items-center gap-2 z-10">
+                {doctorState === 'explaining' ? (
+                  <span className="px-3.5 py-1.5 rounded-full bg-emerald-600/90 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 border border-emerald-400/30 shadow-md animate-pulse">
+                    <Volume2 className="w-3.5 h-3.5" />
+                    <span>Doctor Explaining</span>
+                  </span>
+                ) : isProcessing ? (
+                  <span className="px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md text-amber-300 text-xs font-semibold flex items-center gap-1.5 border border-amber-400/30 shadow-sm animate-pulse">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                    <span>Doctor Thinking...</span>
+                  </span>
+                ) : doctorState === 'listening' ? (
+                  <span className="px-3.5 py-1.5 rounded-full bg-blue-600/90 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 border border-blue-400/30 shadow-md animate-pulse">
+                    <Mic className="w-3.5 h-3.5" />
+                    <span>Doctor Listening</span>
+                  </span>
+                ) : isMicOn ? (
+                  <span className="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 text-xs font-semibold flex items-center gap-1.5 border border-emerald-500/30 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span>Mic Active • Speak Now</span>
+                  </span>
+                ) : (
+                  <span className="px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md text-zinc-300 text-xs font-medium flex items-center gap-1.5 border border-white/10 shadow-xs">
+                    <MicOff className="w-3.5 h-3.5 text-zinc-400" />
+                    <span>Muted • Doctor Idle</span>
+                  </span>
+                )}
+                <span className="hidden sm:inline-flex px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md text-white text-xs font-medium border border-white/10 shadow-xs items-center gap-1">
                   <span className="text-[10px]">📶</span> 4G LTE
                 </span>
               </div>
@@ -321,8 +496,29 @@ export default function VirtualDoctor() {
 
               {/* Upload Feedback Toast if image selected */}
               {uploadFeedback && (
-                <div className="absolute top-16 left-6 px-3 py-1.5 rounded-full bg-[#16865B] text-white text-xs font-medium shadow-lg animate-in fade-in">
+                <div className="absolute top-16 left-6 px-3 py-1.5 rounded-full bg-[#16865B] text-white text-xs font-medium shadow-lg animate-in fade-in z-20">
                   {uploadFeedback}
+                </div>
+              )}
+
+              {/* Floating Uploaded Image Preview on Video Stage */}
+              {uploadedImage && (
+                <div className="absolute bottom-24 left-6 max-w-[200px] bg-black/80 backdrop-blur-md rounded-2xl p-2 border border-white/20 shadow-2xl z-20 animate-in fade-in zoom-in-95">
+                  <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-zinc-800 border border-white/10">
+                    <img src={uploadedImage.preview} alt="Uploaded medical image" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setUploadedImage(null)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/80 hover:bg-red-600 text-white flex items-center justify-center text-xs font-bold transition-colors"
+                      title="Dismiss preview"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="mt-1.5 px-1 flex items-center justify-between text-[10px] text-zinc-300 font-medium">
+                    <span className="truncate max-w-[110px]" title={uploadedImage.name}>{uploadedImage.name}</span>
+                    <span className="text-emerald-400 font-bold shrink-0">Analyzed</span>
+                  </div>
                 </div>
               )}
 
@@ -337,7 +533,9 @@ export default function VirtualDoctor() {
                     onClick={toggleMic}
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-150 shadow-sm active:scale-95 group relative ${
                       isMicOn
-                        ? 'bg-zinc-800/90 text-white hover:bg-zinc-700'
+                        ? isPatientSpeaking
+                          ? 'bg-blue-600 text-white ring-4 ring-blue-400/50 animate-pulse'
+                          : 'bg-zinc-800/90 text-white hover:bg-zinc-700'
                         : 'bg-zinc-800/90 text-red-400 hover:bg-zinc-700'
                     }`}
                   >
@@ -348,7 +546,7 @@ export default function VirtualDoctor() {
                     )}
                     {/* Hover Tooltip */}
                     <span className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-zinc-900/90 text-white text-[10px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow">
-                      {isMicOn ? 'Mute Microphone' : 'Unmute Microphone'}
+                      {isMicOn ? (isPatientSpeaking ? 'Listening to speech...' : 'Mute Microphone') : 'Unmute Microphone'}
                     </span>
                   </button>
 
@@ -456,11 +654,27 @@ export default function VirtualDoctor() {
               </div>
 
               {/* Subtitle Dialogue Text */}
-              <p className="text-sm sm:text-base text-[#172B24] leading-relaxed font-normal">
-                {subtitleLang === 'hi'
-                  ? (currentSubtitle.hindi || 'मैं आपके गले में हल्का लालपन देख सकता हूँ। कृपया पानी पिएं और आराम करें।')
-                  : (currentSubtitle.english || 'I can see the mild redness in your throat. Please stay hydrated and rest today.')}
-              </p>
+              {isPatientSpeaking && patientSpeechTranscript ? (
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-blue-50/80 border border-blue-200 animate-in fade-in">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Mic className="w-4 h-4 animate-pulse" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider block">
+                      Listening to you...
+                    </span>
+                    <p className="text-sm sm:text-base text-[#172B24] font-medium leading-relaxed">
+                      "{patientSpeechTranscript}"
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm sm:text-base text-[#172B24] leading-relaxed font-normal">
+                  {subtitleLang === 'hi'
+                    ? (currentSubtitle.hindi || 'हैलो! मैं आपके स्वास्थ्य के बारे में बात करने के लिए तैयार हूँ। कृपया अपने लक्षण बताएं।')
+                    : (currentSubtitle.english || 'Hello! I am ready to listen to your health concerns. Please share your symptoms.')}
+                </p>
+              )}
             </div>
 
           </section>

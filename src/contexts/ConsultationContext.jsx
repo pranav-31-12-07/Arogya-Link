@@ -41,6 +41,9 @@ export function ConsultationProvider({ children }) {
 
   const [selectedDoctorGender, setSelectedDoctorGender] = useState('male');
   const [isMicOn, setIsMicOn] = useState(false);
+  const [isPatientSpeaking, setIsPatientSpeaking] = useState(false);
+  const [patientSpeechTranscript, setPatientSpeechTranscript] = useState('');
+  const [speechRecognitionSupported, setSpeechRecognitionSupported] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -128,6 +131,12 @@ export function ConsultationProvider({ children }) {
    */
   const doctor = DOCTORS[selectedDoctorGender];
 
+  /**
+   * VR Doctor Model State Hierarchy:
+   * 1. When AI is answering / speaking -> Explanation video
+   * 2. When unmute AND patient is speaking -> Listening video
+   * 3. When mute (or unmute but silent) -> Idle image
+   */
   let doctorState = 'idle';
   let activeMedia = {
     type: 'image',
@@ -140,13 +149,14 @@ export function ConsultationProvider({ children }) {
       type: 'video',
       src: doctor.explainVideo
     };
-  } else if (isMicOn) {
+  } else if (isMicOn && isPatientSpeaking) {
     doctorState = 'listening';
     activeMedia = {
       type: 'video',
       src: doctor.listeningVideo
     };
   } else {
+    // When mute or idle
     doctorState = 'idle';
     activeMedia = {
       type: 'image',
@@ -181,31 +191,233 @@ export function ConsultationProvider({ children }) {
     }
   };
 
-  // Microphone toggle handler
-  const toggleMic = () => {
-    setIsMicOn((prev) => !prev);
+  // Synchronized state refs for STT lifecycle
+  const recognitionRef = useRef(null);
+  const silenceTimerRef = useRef(null);
+  const isMicOnRef = useRef(isMicOn);
+  const isAiSpeakingRef = useRef(isAiSpeaking);
+  const isProcessingRef = useRef(isProcessing);
+
+  useEffect(() => {
+    isMicOnRef.current = isMicOn;
+  }, [isMicOn]);
+
+  useEffect(() => {
+    isAiSpeakingRef.current = isAiSpeaking;
+  }, [isAiSpeaking]);
+
+  useEffect(() => {
+    isProcessingRef.current = isProcessing;
+  }, [isProcessing]);
+
+  const getRecognitionLangCode = (lang) => {
+    const l = (lang || '').toLowerCase();
+    if (l.includes('hindi') || l.includes('hi')) return 'hi-IN';
+    if (l.includes('marathi') || l.includes('mr')) return 'mr-IN';
+    if (l.includes('bengali') || l.includes('bn')) return 'bn-IN';
+    if (l.includes('kannada') || l.includes('kn')) return 'kn-IN';
+    if (l.includes('punjabi') || l.includes('pa')) return 'pa-IN';
+    return 'en-IN';
   };
 
-  // Text-To-Speech with synchronized avatar explain state
-  const speakAiResponse = (text) => {
+  // Web Speech API Continuous STT & Voice Activity Detection
+  useEffect(() => {
     if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setSpeechRecognitionSupported(false);
+      return;
+    }
+    setSpeechRecognitionSupported(true);
+
+    if (isMicOn) {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = getRecognitionLangCode(selectedLanguage);
+
+        recognition.onstart = () => {
+          // Listening active
+        };
+
+        recognition.onspeechstart = () => {
+          if (!isAiSpeakingRef.current && !isProcessingRef.current) {
+            setIsPatientSpeaking(true);
+          }
+        };
+
+        recognition.onsoundstart = () => {
+          if (!isAiSpeakingRef.current && !isProcessingRef.current) {
+            setIsPatientSpeaking(true);
+          }
+        };
+
+        recognition.onresult = (event) => {
+          if (isAiSpeakingRef.current || isProcessingRef.current) return;
+
+          let interimTranscript = '';
+          let finalTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            } else {
+              interimTranscript += event.results[i][0].transcript;
+            }
+          }
+
+          const currentText = (finalTranscript || interimTranscript).trim();
+          if (currentText) {
+            setIsPatientSpeaking(true);
+            setPatientSpeechTranscript(currentText);
+
+            // Silence debounce timer: 1.6s of silence after patient speech triggers AI consultation
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+            silenceTimerRef.current = setTimeout(() => {
+              setIsPatientSpeaking(false);
+              const messageToSend = currentText;
+              setPatientSpeechTranscript('');
+              if (messageToSend.trim() && !isProcessingRef.current) {
+                sendMessage(messageToSend.trim());
+              }
+            }, 1600);
+          }
+        };
+
+        recognition.onerror = (event) => {
+          if (event.error !== 'no-speech') {
+            console.warn('Speech recognition status:', event.error);
+          }
+        };
+
+        recognition.onend = () => {
+          // Auto-restart while mic is unmuted and AI is not answering
+          if (isMicOnRef.current && !isAiSpeakingRef.current && !isProcessingRef.current) {
+            try {
+              recognition.start();
+            } catch (_) {}
+          }
+        };
+
+        recognitionRef.current = recognition;
+        try {
+          recognition.start();
+        } catch (_) {}
+
+      } catch (err) {
+        console.warn('Failed to start speech recognition:', err);
+      }
+    } else {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch (_) {}
+        recognitionRef.current = null;
+      }
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
+      setIsPatientSpeaking(false);
+      setPatientSpeechTranscript('');
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch (_) {}
+      }
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
+    };
+  }, [isMicOn, selectedLanguage]);
+
+  // Microphone toggle handler
+  const toggleMic = () => {
+    setIsMicOn((prev) => {
+      const nextState = !prev;
+      if (!nextState) {
+        setIsPatientSpeaking(false);
+        setPatientSpeechTranscript('');
+      }
+      return nextState;
+    });
+  };
+
+  // Text-To-Speech with synchronized avatar explain state and gender-specific voices
+  const speakAiResponse = (text) => {
+    if (typeof window === 'undefined' || !text) return;
+
+    // Temporarily pause speech recognition while AI is speaking to avoid feedback echo
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch (_) {}
+    }
+    setIsPatientSpeaking(false);
+
+    // Sanitize speech text: convert numbered lists (1. 2.) and bullets (* - •) into flowing paragraphs
+    const cleanSpeechText = text
+      .replace(/^[\s]*[\d]+[\.\)]\s*/gm, '') // Remove list numbers like 1. 2.
+      .replace(/^[\s]*[\*\-•]\s*/gm, '')     // Remove bullet symbols
+      .replace(/[\*\#\_`~]/g, '')             // Strip markdown asterisks, hashes, etc.
+      .replace(/\s*\n+\s*/g, ' ')            // Merge line breaks into seamless paragraph sentences
+      .trim();
 
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = audioSpeed;
-      utterance.pitch = 1.0;
-      
+      const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
+      utterance.rate = audioSpeed || 1.0;
+
+      const isFemale = selectedDoctorGender === 'female';
+      // Pitch modulation: higher and brighter for female doctor (1.18), deeper and resonant for male doctor (0.88)
+      utterance.pitch = isFemale ? 1.18 : 0.88;
+
+      try {
+        const voices = window.speechSynthesis.getVoices();
+        const langPrefix = getRecognitionLangCode(selectedLanguage).split('-')[0].toLowerCase();
+        
+        // Filter voices that match current language or dialect
+        const matchingLangVoices = voices.filter(v => v.lang.toLowerCase().startsWith(langPrefix));
+        const candidatePool = matchingLangVoices.length > 0 ? matchingLangVoices : voices;
+
+        const femaleKeywords = ['female', 'zira', 'heera', 'susan', 'hazel', 'kalpana', 'swara', 'geeta', 'samantha', 'victoria', 'karen', 'catherine', 'eva', 'ananya', 'woman'];
+        const maleKeywords = ['male', 'david', 'ravi', 'george', 'mark', 'james', 'richard', 'daniel', 'hemant', 'vikram', 'guy', 'man'];
+
+        let selectedVoice = null;
+        if (isFemale) {
+          selectedVoice = candidatePool.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
+        } else {
+          selectedVoice = candidatePool.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k)));
+        }
+
+        // Fallback to first matching language voice if specific gender voice not named explicitly
+        if (!selectedVoice && candidatePool.length > 0) {
+          selectedVoice = candidatePool[0];
+        }
+
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+      } catch (err) {
+        console.warn('Voice selection error:', err);
+      }
+
       utterance.onstart = () => {
         setIsAiSpeaking(true);
       };
 
       utterance.onend = () => {
         setIsAiSpeaking(false);
+        // Resume listening if mic is still active
+        if (isMicOnRef.current && recognitionRef.current) {
+          try { recognitionRef.current.start(); } catch (_) {}
+        }
       };
 
       utterance.onerror = () => {
         setIsAiSpeaking(false);
+        if (isMicOnRef.current && recognitionRef.current) {
+          try { recognitionRef.current.start(); } catch (_) {}
+        }
       };
 
       speechRef.current = utterance;
@@ -287,7 +499,7 @@ export function ConsultationProvider({ children }) {
         body: JSON.stringify({
           consultation_id: consultationId,
           message: (text || '').trim() || 'Please examine the attached image.',
-          mode: 'text',
+          mode: (typeof window !== 'undefined' && window.location.pathname.includes('virtual-doctor')) ? 'doctor' : 'text',
           language: selectedLanguage,
           image_base64: imageBase64Data
         })
@@ -373,6 +585,28 @@ export function ConsultationProvider({ children }) {
         english: data.observation,
         hindi: data.observation
       });
+
+      // Synchronize vision analysis into consultation message history
+      const userMsg = {
+        id: `msg-${Date.now()}`,
+        sender: 'user',
+        senderName: 'You (Patient)',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: 'Uploaded medical image for preliminary visual examination.',
+        attachment: 'Medical Image',
+        imagePreview: imageBase64
+      };
+
+      const aiReply = {
+        id: `msg-${Date.now() + 1}`,
+        sender: 'ai',
+        senderName: 'AAROGYA LINK',
+        badge: 'Visual Triage Observation',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: data.observation
+      };
+
+      setMessages((prev) => [...prev, userMsg, aiReply]);
       return data;
     } catch (err) {
       console.error('Vision analysis error:', err);
@@ -459,7 +693,11 @@ export function ConsultationProvider({ children }) {
         vitals,
         symptoms,
         sendMessage,
-        analyzeVision
+        analyzeVision,
+        isPatientSpeaking,
+        setIsPatientSpeaking,
+        patientSpeechTranscript,
+        speechRecognitionSupported
       }}
     >
       {children}

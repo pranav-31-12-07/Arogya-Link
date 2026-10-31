@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_reconnect
+Created At: 2026-10-31 09:52:10 UTC
+=====================================
+
+[2026-10-31 09:52:10 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello Doctor
+
+[2026-10-31 09:52:26 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! I'm here to help. Please tell me more about what's going on. When did it start? Is it constant or does it come and go? How severe is it? Sharp, dull, throbbing, or burning? Where exactly is the discomfort? Does it spread anywhere else?

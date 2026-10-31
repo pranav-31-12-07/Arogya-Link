@@ -47,6 +47,7 @@ export default function TextMode() {
   const [inputText, setInputText] = useState('');
   const [copiedId, setCopiedId] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -93,6 +94,28 @@ export default function TextMode() {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
+      e.target.value = '';
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setSelectedFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -369,12 +392,27 @@ export default function TextMode() {
         <div className="max-w-4xl mx-auto">
           
           {selectedFile && (
-            <div className="mb-2 px-4 py-1.5 rounded-xl bg-white border border-[#E4EBE6] text-xs flex items-center justify-between text-[#172B24] shadow-xs">
-              <span className="truncate">Attached: {selectedFile.name}</span>
+            <div className="mb-2 p-2 px-3 rounded-2xl bg-white border border-[#E4EBE6] text-xs flex items-center justify-between text-[#172B24] shadow-sm animate-in fade-in">
+              <div className="flex items-center gap-2.5 truncate">
+                {selectedFile.type?.startsWith('image/') && (
+                  <img
+                    src={URL.createObjectURL(selectedFile)}
+                    alt="Preview"
+                    className="w-9 h-9 rounded-lg object-cover border border-[#c4e3d3] shrink-0"
+                  />
+                )}
+                <div className="truncate">
+                  <span className="font-semibold block truncate">{selectedFile.name}</span>
+                  <span className="text-[10px] text-[#718078]">
+                    {(selectedFile.size / 1024).toFixed(1)} KB • Ready for Qwen2.5-VL visual analysis
+                  </span>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setSelectedFile(null)}
-                className="text-red-500 hover:text-red-700 font-bold ml-2"
+                className="w-6 h-6 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs shrink-0 ml-2 transition"
+                title="Remove attachment"
               >
                 ✕
               </button>
@@ -383,7 +421,12 @@ export default function TextMode() {
 
           <form
             onSubmit={handleSend}
-            className="bg-white rounded-full border border-[#E4EBE6] shadow-lg p-1.5 flex items-center gap-2 transition-all focus-within:ring-2 focus-within:ring-[#16865B]/20 focus-within:border-[#16865B]"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`bg-white rounded-full border shadow-lg p-1.5 flex items-center gap-2 transition-all focus-within:ring-2 focus-within:ring-[#16865B]/20 focus-within:border-[#16865B] ${
+              isDragging ? 'border-[#16865B] ring-2 ring-[#16865B]/30 bg-[#E8F5EE]/40' : 'border-[#E4EBE6]'
+            }`}
           >
             {/* Attachment Button */}
             <input

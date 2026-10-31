@@ -1,0 +1,11 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test-upload
+Created At: 2026-10-31 11:58:09 UTC
+=====================================
+
+[2026-10-31 11:58:09 UTC]
+Mode: VIDEO
+Speaker: SYSTEM
+Type: VISUAL_OBSERVATION
+Content:
+[Language: English] Vision Analysis Observation: The image shows a person wearing a white coat and a stethoscope, standing in a medical setting with medical equipment in the background.

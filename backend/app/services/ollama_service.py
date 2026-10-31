@@ -43,7 +43,8 @@ class OllamaService:
         Sends conversation to primary model (qwen2.5vl:3b) via Ollama chat API.
         Enforces target response language and handles multimodal text + image input.
         """
-        system_instruction = get_system_prompt(response_language)
+        clean_lang = (response_language or "English").strip()
+        system_instruction = get_system_prompt(clean_lang)
 
         messages = [{"role": "system", "content": system_instruction}]
         
@@ -51,8 +52,23 @@ class OllamaService:
         for turn in conversation_history:
             messages.append({"role": turn["role"], "content": turn["content"]})
 
+        # Build explicit language directive on the user turn with paragraph-only rule
+        paragraph_rule = "Give your reply in natural, conversational paragraphs only. Do NOT use bullet points, numbered lists, or outline formatting (no 1., 2., *, -)."
+        if clean_lang.lower() == "english":
+            lang_directive = f"[CRITICAL INSTRUCTION: Respond 100% in English only. Do NOT output any Hindi, Devanagari script, or regional words. {paragraph_rule}]"
+        elif clean_lang.lower() == "hindi":
+            lang_directive = f"[CRITICAL INSTRUCTION: Respond 100% in clear Hindi (हिन्दी) only. {paragraph_rule}]"
+        elif clean_lang.lower() == "marathi":
+            lang_directive = f"[CRITICAL INSTRUCTION: Respond 100% in Marathi (मराठी) only. {paragraph_rule}]"
+        elif clean_lang.lower() == "hinglish":
+            lang_directive = f"[CRITICAL INSTRUCTION: Respond 100% in Hinglish (Hindi written using English/Roman alphabet). Do not use Devanagari script. {paragraph_rule}]"
+        else:
+            lang_directive = f"[CRITICAL INSTRUCTION: Respond 100% in {clean_lang} only. {paragraph_rule}]"
+
+        user_content_with_directive = f"{user_message}\n\n{lang_directive}"
+
         # Add the new user turn (with optional image attachment for multimodal analysis)
-        user_turn: Dict[str, Any] = {"role": "user", "content": user_message}
+        user_turn: Dict[str, Any] = {"role": "user", "content": user_content_with_directive}
         if image_base64:
             # Strip data URL header if present (e.g. data:image/jpeg;base64,...)
             clean_b64 = image_base64.split(",")[-1] if "," in image_base64 else image_base64
@@ -88,6 +104,38 @@ class OllamaService:
                 assistant_message = data.get("message", {}).get("content", "").strip()
                 if not assistant_message:
                     raise OllamaServiceException("Ollama returned an empty response.")
+
+                # Zero-tolerance safety guard: If user requested English but model leaked Hindi/Devanagari,
+                # translate the clinical triage response to English immediately before returning.
+                if clean_lang.lower() == "english" and any('\u0900' <= ch <= '\u097f' for ch in assistant_message):
+                    translate_payload = {
+                        "model": settings.PRIMARY_MODEL,
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "You are a professional medical translator for AAROGYA LINK. Translate the following clinical triage response accurately into clean, natural English. Output ONLY the English translation, with no Hindi, no Devanagari script, and no meta-commentary."
+                            },
+                            {
+                                "role": "user",
+                                "content": assistant_message
+                            }
+                        ],
+                        "stream": False,
+                        "options": {
+                            "temperature": 0.1,
+                            "num_gpu": 20,
+                            "num_predict": 300
+                        }
+                    }
+                    trans_res = await client.post(
+                        f"{settings.OLLAMA_BASE_URL}/api/chat",
+                        json=translate_payload
+                    )
+                    if trans_res.status_code == 200:
+                        trans_data = trans_res.json()
+                        translated_text = trans_data.get("message", {}).get("content", "").strip()
+                        if translated_text:
+                            assistant_message = translated_text
 
                 return assistant_message
 

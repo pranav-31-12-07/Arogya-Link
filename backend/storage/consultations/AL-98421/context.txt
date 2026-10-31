@@ -1,7 +1,7 @@
 AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
 Consultation ID: AL-98421
-Reconstructed At: 2026-10-31 06:08:35 UTC
-Total Events: 4
+Reconstructed At: 2026-10-31 12:00:41 UTC
+Total Events: 110
 =====================================
 
 [2026-10-31 06:06:46 UTC]
@@ -71,25 +71,711 @@ Mode: TEXT
 Speaker: PATIENT
 Type: MESSAGE
 Content:
-[Language: English] Hey
+
+
+[Language: English] Hey]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
 
 [2026-10-31 06:36:58 UTC]
 Mode: TEXT
 Speaker: ASSISTANT
 Type: RESPONSE
 Content:
-[English] हाँ, आप कैसे हैं?
+
+
+[English] हाँ, आप कैसे हैं?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
 
 [2026-10-31 06:37:36 UTC]
 Mode: TEXT
 Speaker: PATIENT
 Type: MESSAGE
 Content:
-[Language: English] I am having a pain in my right feet, can you also talk in English
+
+
+[Language: English] I am having a pain in my right feet, can you also talk in English]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
 
 [2026-10-31 06:37:47 UTC]
 Mode: TEXT
 Speaker: ASSISTANT
 Type: RESPONSE
 Content:
-[English] हाँ, आपका स्वागत है। यदि आपको किसी विशेष स्वास्थ्य समस्या के बारे में बात करना चाहिए, या किसी दर्द के बारे में बात करना चाहिए, कृपया बताएं। आपकी स्वास्थ्य से बात करने में मदद कर सकता हूँ।
+
+
+[English] हाँ, आपका स्वागत है। यदि आपको किसी विशेष स्वास्थ्य समस्या के बारे में बात करना चाहिए, या किसी दर्द के बारे में बात करना चाहिए, कृपया बताएं। आपकी स्वास्थ्य से बात करने में मदद कर सकता हूँ।]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 09:47:09 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hey I am Pranav Shah. I am having pain in my right foot.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 09:48:15 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hi]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 09:53:09 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hey I am Pranav Shah. I am having pain in my right foot.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 09:53:26 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] हैलो प्रनव शाह! आपका स्वागत है। आपके दर्द के बारे में बात करना चाहिए। आपकी दर्द कैसे निराशाजनक है? यह किस भाग में है और यह कहाँ भी फैल रहा है? आप किसी दूसरी दर्द के साथ किसी भी संबंधित लक्षण हैं?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:03:52 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hey I am Pranav Shah. I am having pain in my right foot.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:04:04 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I am Pranav Shah. I am having pain in my right foot. When did this start? Has it been constant or does it come and go? How severe is it (mild, moderate, severe)? Is it sharp, dull, throbbing, or burning? Where exactly is the discomfort? Does it spread anywhere else? Are there any other symptoms like fever, chills, nausea, vomiting, dizziness, cough, or difficulty breathing? Does anything make it better or worse (food, movement, rest)? Any existing conditions (hypertension, diabetes), daily medications, or allergies?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:04:55 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] It started two hours ago after playing football.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:05:08 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Yes, the rain has started. How severe is your pain? Is it a sharp pain or a dull pain? Where is it located and where is it spreading to?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:07:27 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hey I am Pranav Shah. I am having pain in my right foot.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:07:32 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I see. Can you tell me when this started? Is it constant or does it come and go? Also, how severe is the pain? Is it sharp, dull, throbbing, or burning?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:08:34 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] It is burning [Image Attached for Analysis]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:09:22 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I see you have a picture of your foot. It looks like there might be some redness and possibly a blister or lesion on the top of your toe. Burning sensation is also mentioned. ]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:19:25 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hello]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:19:39 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Hello! How can I assist you today?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:19:50 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] I have a pain in my back]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:19:57 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I'm sorry to hear that you're experiencing pain in your back. Please describe when the pain started, how severe it is, and where exactly you feel the discomfort. Also, if you have any other symptoms like fever, chills, nausea, or difficulty breathing, please let me know.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:20:26 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Actually I have a pain only in my back because of gym]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:20:35 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I understand. It sounds like the pain might be related to overexertion or strain from gym activities. However, I can't provide a definitive diagnosis or treatment advice. If the pain persists or becomes severe, it would be best to consult a healthcare professional for a proper evaluation. Please remember to take it easy and avoid any strenuous activities until you feel better.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:21:09 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] So can I take any medicines]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:21:15 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Yes, you can take some medicines. However, it's important to consult with a healthcare professional first to ensure the right treatment. They can provide you with safe and appropriate medication based on your condition.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:26:02 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hello]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:26:06 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Hello! How can I assist you today?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:26:18 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] I am having no pain in my right foot]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:26:47 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Yes, you have not experienced any anxiety or pain after the rain. I can help you discuss your specific health concerns. Do you want to talk about your specific health issue, or do you want to talk about pain? Please let me know.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:27:11 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] I want to talk about my pain in my right foot]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:27:16 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Sure, I'm here to help. Could you please tell me more about when this started and how severe it is? Also, where exactly is the pain located and does it radiate to any other area?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:27:53 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Off right leg]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:28:16 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I understand that you are experiencing pain in your right leg. It is important to note that as an AI, I cannot provide a definitive diagnosis or prescribe medication. However, I can offer some general advice. ]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:41:09 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hello]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:41:13 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Hello! How can I assist you today?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:41:28 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] I am having pain in my back from yesterday after return from the gym]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:42:05 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Yes, I understand. What should we discuss about this?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:42:47 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Uh the pain started from yesterday when I returned from the gym it is like someone is pinching me or someone is trying to hammer a needle in my back and I think it is due to deadlift because I tried deadlifting yesterday so what should I do]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:43:06 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I see. It sounds like you might be experiencing muscle strain or possibly a strain from a specific activity like deadlifting. Here are a few steps you can try to help alleviate the pain:]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 10:44:30 UTC]
+Mode: VIDEO
+Speaker: SYSTEM
+Type: VISUAL_OBSERVATION
+Content:
+
+
+[Language: English] Vision Analysis Observation: I'm sorry, but I'm unable to see the image you're referring to. Could you please describe the visible features or provide more details about the situation?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:48:56 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hello I am pranav Shaha]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:49:09 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Hello Pranav Shaha! It's nice to meet you. If you have any concerns or health issues you'd like to discuss, please feel free to tell me. I'm here to help and provide support.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:49:26 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Can you tell me what exactly are you]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:49:29 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I am AAROGYA LINK, your multilingual telehealth assistant. I am here to help you with your health concerns. Please tell me more about what you are experiencing.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:49:53 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] What can you help me with and what was my name]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:49:57 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I can help you with your symptoms and provide general advice. Your name is Pranav. If you have any specific concerns or symptoms you'd like to discuss, please let me know. I'm here to help and provide guidance.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:59:07 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] hey]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:59:10 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Sure! I'm here to help. Could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:59:15 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hey I am Pranav Shah. I am having pain in my right foot.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:59:23 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Yes, your name is Pranav Shah. Is your backache? Did it happen after the rain or due to some other reason?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 11:59:43 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] Hey I am Pranav Shah. I am having pain in my right foot.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 12:00:07 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] Yes, Pranav! Welcome. Is your pain due to a specific reason or something else? If your pain is improving, that's good. However, if your pain is not improving or affecting other parts of your body, you may need to see a doctor. Is your pain due to a specific reason or something else?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+

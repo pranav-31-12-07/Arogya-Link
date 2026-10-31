@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test-chat-img
+Created At: 2026-10-31 12:00:11 UTC
+=====================================
+
+[2026-10-31 12:00:11 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] What does this image show in one sentence? [Image Attached for Analysis]
+
+[2026-10-31 12:00:53 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] The image shows a male doctor wearing a white coat and stethoscope, standing in a medical setting with medical equipment in the background.
