@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     OLLAMA_TIMEOUT: float = float(os.getenv("OLLAMA_TIMEOUT", "120.0"))
     
     # Storage Settings
-    STORAGE_DIR: Path = BASE_DIR / "storage" / "consultations"
+    ACTIVE_STORAGE_DIR: Path = BASE_DIR / "storage" / "active_consultations"
+    TEST_STORAGE_DIR: Path = BASE_DIR / "storage" / "test_consultations"
+    STORAGE_DIR: Path = ACTIVE_STORAGE_DIR
     
     # CORS
     CORS_ORIGINS: list[str] = [
@@ -31,5 +33,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Ensure storage directory exists
-settings.STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+# Ensure storage directories exist
+settings.ACTIVE_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+settings.TEST_STORAGE_DIR.mkdir(parents=True, exist_ok=True)

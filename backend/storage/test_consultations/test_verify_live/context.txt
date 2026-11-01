@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_verify_live
+Created At: 2026-11-01 02:26:08 UTC
+=====================================
+
+[2026-11-01 02:26:08 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello doctor, can you hear me?
+
+[2026-11-01 02:26:18 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! I'm here to help. How can I assist you today?

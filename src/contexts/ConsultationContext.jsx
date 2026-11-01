@@ -45,6 +45,7 @@ export function ConsultationProvider({ children }) {
   const [patientSpeechTranscript, setPatientSpeechTranscript] = useState('');
   const [speechRecognitionSupported, setSpeechRecognitionSupported] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingText, setProcessingText] = useState('');
@@ -52,6 +53,7 @@ export function ConsultationProvider({ children }) {
   // Refresh Memory button state
   const [isRefreshingMemory, setIsRefreshingMemory] = useState(false);
   const [refreshFeedback, setRefreshFeedback] = useState(null);
+  const memoryVersionRef = useRef(1);
 
   const [selectedLanguage, setSelectedLanguageState] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -164,32 +166,96 @@ export function ConsultationProvider({ children }) {
     };
   }
 
-  // Camera toggle handler
-  const toggleCamera = async () => {
-    if (isCameraOn) {
-      if (patientCameraStream) {
-        patientCameraStream.getTracks().forEach((track) => track.stop());
-        setPatientCameraStream(null);
-      }
-      setIsCameraOn(false);
-    } else {
+  // Helper to safely stop all media tracks of a stream
+  const stopCameraStream = (stream) => {
+    if (stream) {
       try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
-            audio: false
-          });
-          setPatientCameraStream(stream);
-          setIsCameraOn(true);
-        } else {
-          setIsCameraOn(true);
-        }
-      } catch (err) {
-        console.warn('Camera access not granted or not available:', err);
-        setIsCameraOn(true);
+        stream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      } catch (e) {
+        console.warn('Error stopping camera track:', e);
       }
     }
   };
+
+  // Dedicated stop camera handler
+  const stopCamera = () => {
+    if (patientCameraStream) {
+      stopCameraStream(patientCameraStream);
+      setPatientCameraStream(null);
+    }
+    setIsCameraOn(false);
+    setCameraError(null);
+  };
+
+  // Camera toggle handler with environment (rear) camera preference and error handling
+  const toggleCamera = async () => {
+    setCameraError(null);
+    if (isCameraOn) {
+      stopCamera();
+    } else {
+      // Prevent multiple concurrent camera streams
+      if (patientCameraStream) {
+        stopCameraStream(patientCameraStream);
+        setPatientCameraStream(null);
+      }
+
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('Camera access is not supported on this device/browser.');
+        }
+
+        let stream = null;
+        // Prefer rear camera (facingMode: environment) where supported
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              facingMode: { ideal: 'environment' }
+            },
+            audio: false
+          });
+        } catch (envErr) {
+          console.warn('Rear camera unavailable, falling back to default video input:', envErr);
+          // Fallback to standard video device
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+        }
+
+        setPatientCameraStream(stream);
+        setIsCameraOn(true);
+        setCameraError(null);
+      } catch (err) {
+        console.error('Camera initialization error:', err);
+        let errorMsg = 'Camera is unavailable or disabled.';
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          errorMsg = 'Camera permission denied. Please allow camera access in browser settings.';
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          errorMsg = 'No camera device found on this system.';
+        } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+          errorMsg = 'Camera is currently in use by another application.';
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        setCameraError(errorMsg);
+        setIsCameraOn(false);
+        setPatientCameraStream(null);
+      }
+    }
+  };
+
+  // Cleanup camera stream on unmount
+  useEffect(() => {
+    return () => {
+      if (patientCameraStream) {
+        stopCameraStream(patientCameraStream);
+      }
+    };
+  }, [patientCameraStream]);
 
   // Synchronized state refs for STT lifecycle
   const recognitionRef = useRef(null);
@@ -483,6 +549,8 @@ export function ConsultationProvider({ children }) {
       imagePreview: imageBase64Data
     };
 
+    const requestVersion = memoryVersionRef.current;
+
     setMessages((prev) => [...prev, userMsg]);
     setIsProcessing(true);
     setProcessingText('AAROGYA LINK is analyzing clinical information with Qwen2.5-VL...');
@@ -516,6 +584,12 @@ export function ConsultationProvider({ children }) {
 
       const data = await res.json();
 
+      // Invalidate response if Refresh Memory occurred during AI inference
+      if (memoryVersionRef.current !== requestVersion) {
+        console.warn('Discarding stale AI response received after memory reset');
+        return null;
+      }
+
       const aiReply = {
         id: data.message_id || `msg-${Date.now() + 1}`,
         sender: 'ai',
@@ -541,11 +615,15 @@ export function ConsultationProvider({ children }) {
       return aiReply;
 
     } catch (err) {
-      console.error('Chat error:', err);
-      setChatError(err.message || 'Unable to connect to AAROGYA LINK AI service.');
+      if (memoryVersionRef.current === requestVersion) {
+        console.error('Chat error:', err);
+        setChatError(err.message || 'Unable to connect to AAROGYA LINK AI service.');
+      }
     } finally {
-      setIsProcessing(false);
-      setProcessingText('');
+      if (memoryVersionRef.current === requestVersion) {
+        setIsProcessing(false);
+        setProcessingText('');
+      }
     }
   };
 
@@ -554,6 +632,7 @@ export function ConsultationProvider({ children }) {
    */
   const analyzeVision = async (imageBase64, promptText = 'Please provide a preliminary clinical triage observation of this image.', token = null) => {
     if (!imageBase64) return;
+    const requestVersion = memoryVersionRef.current;
     setIsProcessing(true);
     setProcessingText('Analyzing visual frame with Qwen2.5-VL 3B...');
     try {
@@ -567,7 +646,8 @@ export function ConsultationProvider({ children }) {
           consultation_id: consultationId,
           image_base64: imageBase64,
           prompt: promptText,
-          language: selectedLanguage
+          language: selectedLanguage,
+          mode: (typeof window !== 'undefined' && window.location.pathname.includes('virtual-doctor')) ? 'doctor' : 'text'
         })
       });
 
@@ -581,6 +661,11 @@ export function ConsultationProvider({ children }) {
       }
 
       const data = await res.json();
+
+      if (memoryVersionRef.current !== requestVersion) {
+        return null;
+      }
+
       setCurrentSubtitle({
         english: data.observation,
         hindi: data.observation
@@ -609,22 +694,31 @@ export function ConsultationProvider({ children }) {
       setMessages((prev) => [...prev, userMsg, aiReply]);
       return data;
     } catch (err) {
-      console.error('Vision analysis error:', err);
-      throw err;
+      if (memoryVersionRef.current === requestVersion) {
+        console.error('Vision analysis error:', err);
+        throw err;
+      }
     } finally {
-      setIsProcessing(false);
-      setProcessingText('');
+      if (memoryVersionRef.current === requestVersion) {
+        setIsProcessing(false);
+        setProcessingText('');
+      }
     }
   };
 
   /**
-   * Rebuilds the consultation's context.txt from persisted records in FastAPI
+   * Resets active consultation context.txt to empty and clears active conversation state.
    */
   const refreshMemory = async (token = null) => {
     if (isRefreshingMemory) return;
 
     setIsRefreshingMemory(true);
-    setRefreshFeedback({ status: 'loading', message: 'Refreshing consultation memory...' });
+    setRefreshFeedback({ status: 'loading', message: 'Clearing consultation memory...' });
+
+    // Invalidate any in-flight requests immediately
+    memoryVersionRef.current += 1;
+    setIsProcessing(false);
+    setProcessingText('');
 
     try {
       const headers = { 'Content-Type': 'application/json' };
@@ -638,15 +732,32 @@ export function ConsultationProvider({ children }) {
       });
 
       if (!res.ok) {
-        throw new Error('Backend failed to refresh memory.');
+        throw new Error('Backend failed to clear memory.');
       }
 
       const data = await res.json();
-      setRefreshFeedback({ status: 'success', message: data.message || 'Memory refreshed successfully.' });
+      
+      // Reset active frontend conversation state
+      setMessages([]);
+      setAttachments([]);
+      setCurrentSubtitle({
+        english: 'Hello! Welcome to AAROGYA LINK. How are you feeling today? Is there anything about your health you would like to discuss?',
+        hindi: 'नमस्ते! आरोग्य लिंक में आपका स्वागत है। आप आज कैसा महसूस कर रहे हैं? क्या आप किसी स्वास्थ्य समस्या पर बात करना चाहते हैं?'
+      });
+
+      // Clear offline messages for this consultation from IndexedDB
+      try {
+        saveMessagesOffline([]);
+      } catch (_) {}
+
+      setRefreshFeedback({
+        status: 'success',
+        message: data.message || 'Consultation memory cleared successfully.'
+      });
       setTimeout(() => setRefreshFeedback(null), 4000);
     } catch (err) {
       console.error('Refresh memory error:', err);
-      setRefreshFeedback({ status: 'error', message: 'Unable to refresh memory. Please try again.' });
+      setRefreshFeedback({ status: 'error', message: 'Unable to clear consultation memory. Please try again.' });
       setTimeout(() => setRefreshFeedback(null), 5000);
     } finally {
       setIsRefreshingMemory(false);
@@ -671,6 +782,9 @@ export function ConsultationProvider({ children }) {
         toggleMic,
         isCameraOn,
         toggleCamera,
+        stopCamera,
+        cameraError,
+        setCameraError,
         patientCameraStream,
         isAiSpeaking,
         setIsAiSpeaking,

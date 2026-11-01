@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s11_hi
+Created At: 2026-10-31 15:12:11 UTC
+=====================================
+
+[2026-10-31 15:12:11 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: Hindi] नमस्ते, मुझे सिरदर्द है
+
+[2026-10-31 15:12:20 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[Hindi] हाय, मैं आरोग्य लिंक हूँ, आपकी चिंता को खुशी से समझ रही हूँ। आपकी सिरदर्द क्या आपने किसके लिए देखा है? या इसका किस वजह से हो रहा है? या इसकी दृष्टि कैसी है? या इसकी आयुक्ति किस तरह है?

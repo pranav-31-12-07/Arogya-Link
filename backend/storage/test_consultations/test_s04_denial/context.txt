@@ -1,0 +1,32 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s04_denial
+Created At: 2026-11-01 02:03:46 UTC
+=====================================
+
+[2026-11-01 02:03:46 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have a mild throat ache, but I definitely do not have any fever.
+
+[2026-11-01 02:03:51 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. I understand you are experiencing a mild throat ache, and I note that you do not have a fever.
+
+[2026-11-01 02:03:53 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Do I have a fever according to what I told you?
+
+[2026-11-01 02:03:58 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Based on what you explicitly told me, **no, you do not have a fever.** You mentioned earlier that you definitely

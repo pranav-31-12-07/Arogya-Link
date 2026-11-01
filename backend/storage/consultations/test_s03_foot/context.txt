@@ -1,0 +1,19 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s03_foot
+Reconstructed At: 2026-10-31 13:08:00 UTC
+Total Events: 0
+=====================================
+
+[2026-10-31 13:08:02 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have pain in my right foot.
+
+[2026-10-31 13:08:05 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry to hear about your pain in your right foot. Could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else?

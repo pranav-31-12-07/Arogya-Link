@@ -1,0 +1,47 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s08_after_refresh
+Reconstructed At: 2026-10-31 13:09:09 UTC
+Total Events: 4
+=====================================
+
+[2026-10-31 13:09:03 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] I had severe asthma yesterday.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 13:09:07 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I'm sorry to hear about your asthma. Can you tell me how severe the asthma attack was? Did you experience any other symptoms besides the severe asthma, like chest tightness, trouble breathing, or coughing?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 13:09:11 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey
+
+[2026-10-31 13:09:13 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! I'm here to help. Could you please tell me when this pain first started, how intense it feels, and if it spreads anywhere else?

@@ -1,0 +1,20 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s01_greeting
+Created At: 2026-11-01 02:03:16 UTC
+=====================================
+
+[2026-11-01 02:03:16 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey
+
+[2026-11-01 02:03:21 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! I am AAROGYA LINK, your AI health and clinical triage assistant. 
+
+How can I help you today? Please feel free to share any symptoms you are experiencing, general health questions, or medical images/reports you would like to discuss.

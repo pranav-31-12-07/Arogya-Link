@@ -1,0 +1,19 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s05_patientB
+Reconstructed At: 2026-10-31 13:08:21 UTC
+Total Events: 0
+=====================================
+
+[2026-10-31 13:08:30 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have dry eyes from working on my laptop.
+
+[2026-10-31 13:08:33 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry to hear about your dry eyes. Can you tell me how often you use your laptop and how long you typically work on it? Also, do you notice any changes in your eyes, such as redness or irritation, and do you experience any other symptoms like blurred vision or sensitivity to light?

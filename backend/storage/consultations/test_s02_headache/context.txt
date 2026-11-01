@@ -1,0 +1,19 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s02_headache
+Reconstructed At: 2026-10-31 13:07:53 UTC
+Total Events: 0
+=====================================
+
+[2026-10-31 13:07:55 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have a headache
+
+[2026-10-31 13:07:58 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry to hear that you're experiencing a headache. Could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else?

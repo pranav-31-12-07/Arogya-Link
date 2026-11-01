@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s08_after_refresh
+Created At: 2026-10-31 15:12:01 UTC
+=====================================
+
+[2026-10-31 15:12:01 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey
+
+[2026-10-31 15:12:03 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! How can I assist you today?

@@ -1,0 +1,33 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s07_clear
+Reconstructed At: 2026-10-31 13:08:57 UTC
+Total Events: 4
+=====================================
+
+[2026-10-31 13:08:51 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[Language: English] My knee hurts.]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+
+
+[2026-10-31 13:08:55 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+
+
+[English] I'm sorry to hear that you're experiencing knee pain. It can be quite annoying. Could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else? Also, have you noticed any changes in your daily activities or activities that might be causing the pain?]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+

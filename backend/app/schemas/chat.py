@@ -27,12 +27,14 @@ class RefreshMemoryResponse(BaseModel):
     message: str
     consultation_id: str
     reconstructed_at: str
+    memory_version: Optional[int] = None
 
 class VisionAnalysisRequest(BaseModel):
     consultation_id: str
     image_base64: str
     prompt: Optional[str] = None
     language: Optional[str] = None
+    mode: Optional[str] = "doctor"
 
 class VisionAnalysisResponse(BaseModel):
     consultation_id: str

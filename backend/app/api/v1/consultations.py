@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, status
-from typing import Dict, Any
+from fastapi import APIRouter, HTTPException, status, Header
+from typing import Dict, Any, Optional
 from ...schemas.chat import (
     RefreshMemoryResponse,
     VisionAnalysisRequest,
@@ -9,71 +9,49 @@ from ...schemas.chat import (
 from ...services.ollama_service import OllamaService, OllamaServiceException
 from ...services.context_manager import ContextManager
 from ...ai.language_resolver import resolve_response_language
+from ...core.auth import validate_consultation_ownership
 
 router = APIRouter(prefix="", tags=["Consultations"])
 
 @router.post("/consultations/{consultation_id}/refresh-memory", response_model=RefreshMemoryResponse)
-async def refresh_consultation_memory(consultation_id: str):
+async def refresh_consultation_memory(
+    consultation_id: str,
+    authorization: Optional[str] = Header(None)
+):
     """
-    Reconstructs the consultation context.txt from historical interaction records,
-    ensuring shared memory is fresh, validated, and available for both Text and Vision models.
+    Clears the active consultation context.txt completely, resets memory,
+    and increments the memory generation version so that any pending in-flight
+    AI responses are invalidated and cannot repopulate the cleared context.
     """
     clean_id = consultation_id.strip()
     if not clean_id:
         raise HTTPException(status_code=400, detail="Invalid consultation ID")
 
-    # Read current context entries
-    current_raw = ContextManager.load_context_text(clean_id)
+    # 1. Validate consultation ownership
+    validate_consultation_ownership(clean_id, authorization)
+
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
-    events = []
-    if current_raw:
-        raw_items = current_raw.split("\n[")
-        for item in raw_items:
-            if not item.strip() or item.startswith("AAROGYA LINK - CONSULTATION CONTEXT"):
-                continue
-            lines = item.split("\n")
-            ts = lines[0].rstrip("]") if "]" in lines[0] else now_utc
-            mode = "TEXT"
-            speaker = "PATIENT"
-            c_type = "MESSAGE"
-            content_lines = []
-            capturing = False
-
-            for line in lines:
-                if line.startswith("Mode:"):
-                    mode = line.split(":", 1)[1].strip()
-                elif line.startswith("Speaker:"):
-                    speaker = line.split(":", 1)[1].strip()
-                elif line.startswith("Type:"):
-                    c_type = line.split(":", 1)[1].strip()
-                elif line.startswith("Content:"):
-                    capturing = True
-                    continue
-                elif capturing:
-                    content_lines.append(line)
-
-            events.append({
-                "timestamp": ts,
-                "mode": mode,
-                "speaker": speaker,
-                "type": c_type,
-                "content": "\n".join(content_lines).strip()
-            })
-
-    ContextManager.rebuild_context(clean_id, events)
+    # 2. Acquire lock, clear active context.txt, and increment generation version
+    new_version = ContextManager.clear_context(clean_id)
 
     return RefreshMemoryResponse(
         success=True,
-        message="Memory refreshed successfully.",
+        message="Consultation memory cleared successfully.",
         consultation_id=clean_id,
-        reconstructed_at=now_utc
+        reconstructed_at=now_utc,
+        memory_version=new_version
     )
 
 @router.get("/consultations/{consultation_id}/context")
-async def get_consultation_context(consultation_id: str):
-    """Returns the raw context.txt content for the given consultation."""
+async def get_consultation_context(
+    consultation_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """Returns the canonical context.txt content for the authenticated consultation."""
     clean_id = consultation_id.strip()
+    validate_consultation_ownership(clean_id, authorization)
+
     content = ContextManager.load_context_text(clean_id)
     return {
         "consultation_id": clean_id,
@@ -81,12 +59,18 @@ async def get_consultation_context(consultation_id: str):
     }
 
 @router.post("/vision/analyze", response_model=VisionAnalysisResponse)
-async def analyze_vision_media(payload: VisionAnalysisRequest):
+async def analyze_vision_media(
+    payload: VisionAnalysisRequest,
+    authorization: Optional[str] = Header(None)
+):
     """
     Analyzes medical imagery or video frames using primary model qwen2.5vl:3b,
-    in the requested response language, and appends the observation into shared context.txt.
+    in the requested response language, and appends the observation into canonical context.txt.
     """
     consultation_id = payload.consultation_id.strip()
+    validate_consultation_ownership(consultation_id, authorization)
+
+    request_generation = ContextManager.get_memory_generation(consultation_id)
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     target_language = resolve_response_language(payload.prompt or "", payload.language)
@@ -95,7 +79,8 @@ async def analyze_vision_media(payload: VisionAnalysisRequest):
         observation = await OllamaService.analyze_with_vision_model(
             image_base64=payload.image_base64,
             prompt=payload.prompt,
-            response_language=target_language
+            response_language=target_language,
+            mode=payload.mode or "doctor"
         )
     except OllamaServiceException as e:
         raise HTTPException(
@@ -103,14 +88,15 @@ async def analyze_vision_media(payload: VisionAnalysisRequest):
             detail=f"Vision AI service unavailable: {str(e)}"
         )
 
-    # Store concise observation in context.txt (do NOT store raw image base64!)
+    # Store concise observation in canonical context.txt with generation check
     ContextManager.append_entry(
         consultation_id=consultation_id,
         mode="VIDEO",
         speaker="SYSTEM",
         content_type="VISUAL_OBSERVATION",
         content=f"[Language: {target_language}] Vision Analysis Observation: {observation}",
-        timestamp=now_utc
+        timestamp=now_utc,
+        expected_generation=request_generation
     )
 
     return VisionAnalysisResponse(

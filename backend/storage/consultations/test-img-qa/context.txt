@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test-img-qa
+Created At: 2026-10-31 12:44:02 UTC
+=====================================
+
+[2026-10-31 12:44:02 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Please answer: what is the person in this image wearing and where are they standing? [Image Attached for Analysis]
+
+[2026-10-31 12:44:43 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] The person in the image is wearing a white medical coat and a stethoscope around their neck. They are standing in a medical setting, likely a doctor's office or a hospital room, as there are medical equipment and a monitor in the background.

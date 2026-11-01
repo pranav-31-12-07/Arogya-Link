@@ -1,0 +1,33 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s06_modeswitch
+Reconstructed At: 2026-10-31 13:08:39 UTC
+Total Events: 0
+=====================================
+
+[2026-10-31 13:08:41 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have had an earache for two days.
+
+[2026-10-31 13:08:44 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry to hear you're experiencing an earache. Could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else?
+
+[2026-10-31 13:08:46 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Doctor, is my ear problem getting worse?
+
+[2026-10-31 13:08:49 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry to hear that your ear problem is worsening. Could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else?

@@ -1,0 +1,19 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s01_greeting
+Reconstructed At: 2026-10-31 13:07:38 UTC
+Total Events: 0
+=====================================
+
+[2026-10-31 13:07:40 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey
+
+[2026-10-31 13:07:50 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! How can I assist you today?

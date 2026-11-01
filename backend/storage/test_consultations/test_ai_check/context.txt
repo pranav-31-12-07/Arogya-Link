@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_ai_check
+Created At: 2026-11-01 02:36:56 UTC
+=====================================
+
+[2026-11-01 02:36:56 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello doctor
+
+[2026-11-01 02:37:06 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! How can I assist you today?

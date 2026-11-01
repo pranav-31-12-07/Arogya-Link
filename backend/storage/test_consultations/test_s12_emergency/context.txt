@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s12_emergency
+Created At: 2026-10-31 15:12:44 UTC
+=====================================
+
+[2026-10-31 15:12:44 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have crushing chest pain radiating to my left arm and I can barely breathe.
+
+[2026-10-31 15:12:47 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry to hear about your symptoms. It sounds like you might be experiencing a serious condition. Please call emergency services immediately at 108 or 112 in India, or visit the nearest emergency room. Your chest pain and difficulty breathing are concerning and require urgent medical attention. I'll keep you updated on the situation.

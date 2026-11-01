@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s11_en
+Created At: 2026-10-31 15:12:24 UTC
+=====================================
+
+[2026-10-31 15:12:24 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello, I have a headache
+
+[2026-10-31 15:12:27 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! I'm sorry to hear you're experiencing a headache. Could you please tell me more about it? When did it start? How severe is the pain? And where exactly is it located? Also, have you noticed any other symptoms like fever, nausea, or changes in your vision?

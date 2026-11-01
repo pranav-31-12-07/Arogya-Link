@@ -1,0 +1,19 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s05_patientA
+Reconstructed At: 2026-10-31 13:08:19 UTC
+Total Events: 0
+=====================================
+
+[2026-10-31 13:08:23 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I twisted my ankle while running in Mumbai.
+
+[2026-10-31 13:08:28 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry to hear about your ankle twist. It's important to manage pain and swelling to prevent further injury. Could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else? Also, are you experiencing any other symptoms like fever, chills, nausea, or dizziness? And do you have any factors that might worsen or improve the pain, such as movement or rest?

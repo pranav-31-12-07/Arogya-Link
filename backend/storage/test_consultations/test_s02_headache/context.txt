@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s02_headache
+Created At: 2026-11-01 02:03:25 UTC
+=====================================
+
+[2026-11-01 02:03:25 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have a headache
+
+[2026-11-01 02:03:33 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I am sorry to hear that you are dealing with a headache. Headaches can be uncomfortable and

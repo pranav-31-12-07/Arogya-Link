@@ -1,0 +1,11 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s06_modeswitch
+Created At: 2026-11-01 01:57:49 UTC
+=====================================
+
+[2026-11-01 01:57:49 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have had an earache for two days.

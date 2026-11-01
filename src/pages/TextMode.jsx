@@ -184,7 +184,7 @@ export default function TextMode() {
               onClick={handleRefreshMemoryClick}
               disabled={isRefreshingMemory}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#E8F5EE] border border-[#E4EBE6] text-[#172B24] hover:text-[#16865B] shadow-xs transition active:scale-95 disabled:opacity-50"
-              title="Reconstruct and synchronize consultation context.txt from persisted memory"
+              title="Clear active consultation memory and start a fresh AI context"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-[#16865B] ${isRefreshingMemory ? 'animate-spin' : ''}`} />
               <span>Refresh Memory</span>

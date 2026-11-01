@@ -10,13 +10,18 @@ import {
   ImagePlus,
   Captions,
   Volume2,
+  Camera,
+  RotateCcw,
+  Check,
+  AlertCircle,
   Scan,
   Loader2,
   Upload,
   CheckCircle2,
   Trash2,
   Paperclip,
-  Sparkles
+  Sparkles,
+  RefreshCw
 } from 'lucide-react';
 
 export default function VirtualDoctor() {
@@ -30,6 +35,8 @@ export default function VirtualDoctor() {
     toggleMic,
     isCameraOn,
     toggleCamera,
+    stopCamera,
+    cameraError,
     patientCameraStream,
     isAiSpeaking,
     speakAiResponse,
@@ -42,19 +49,37 @@ export default function VirtualDoctor() {
     isPatientSpeaking,
     patientSpeechTranscript,
     speechRecognitionSupported,
-    sendMessage
+    sendMessage,
+    refreshMemory,
+    isRefreshingMemory,
+    refreshFeedback
   } = useConsultation();
   const { getIdToken } = useAuth();
 
   const [subtitleLang, setSubtitleLang] = useState('en');
   const [uploadFeedback, setUploadFeedback] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [capturedFrame, setCapturedFrame] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const patientVideoRef = useRef(null);
   const fileInputRef = useRef(null);
   const sidebarFileInputRef = useRef(null);
   const lastCaptureTimeRef = useRef(0);
+
+  // Stop camera tracks when component unmounts
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
+  // Clear captured frame preview if camera is toggled off
+  useEffect(() => {
+    if (!isCameraOn) {
+      setCapturedFrame(null);
+    }
+  }, [isCameraOn]);
 
   // Attach webcam stream to patient PiP video element when camera is active
   useEffect(() => {
@@ -156,7 +181,8 @@ export default function VirtualDoctor() {
     setUploadFeedback('');
   };
 
-  const handleScanFrame = async () => {
+  // Capture live camera frame onto canvas as JPEG
+  const handleCaptureFrame = () => {
     if (cooldown > 0 || isProcessing) return;
     if (!isCameraOn || !patientVideoRef.current) {
       setUploadFeedback('Please turn on your camera first.');
@@ -166,38 +192,75 @@ export default function VirtualDoctor() {
 
     const video = patientVideoRef.current;
     if (video.videoWidth === 0 || video.videoHeight === 0) {
-      setUploadFeedback('Camera feed not ready yet.');
+      setUploadFeedback('Camera feed is initializing. Please wait a moment.');
       setTimeout(() => setUploadFeedback(''), 3000);
       return;
     }
 
     try {
-      setCooldown(15); // 15-second throttle cooldown to protect system & GPU
-      setUploadFeedback('Capturing camera frame for preliminary observation...');
-
+      // Create HTML canvas to convert video frame to JPEG
       const canvas = document.createElement('canvas');
-      canvas.width = Math.min(video.videoWidth, 640);
-      canvas.height = Math.min(video.videoHeight, 480);
+      canvas.width = Math.max(video.videoWidth, 640);
+      canvas.height = Math.max(video.videoHeight, 480);
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const frameBase64 = canvas.toDataURL('image/jpeg', 0.85);
 
+      const frameJpeg = canvas.toDataURL('image/jpeg', 0.90);
+      setCapturedFrame(frameJpeg);
+      setUploadFeedback('Image captured. Review preview, retake, or confirm to share with doctor.');
+    } catch (err) {
+      console.error('Frame capture error:', err);
+      setUploadFeedback('Failed to capture frame from camera.');
+      setTimeout(() => setUploadFeedback(''), 3000);
+    }
+  };
+
+  // Discard captured frame and return to live camera preview
+  const handleRetakeCapture = () => {
+    setCapturedFrame(null);
+    setUploadFeedback('Live camera preview resumed. Position camera and click Capture.');
+    setTimeout(() => setUploadFeedback(''), 3000);
+  };
+
+  // Confirm and share captured image with VR Doctor
+  const handleConfirmAndShare = async () => {
+    if (!capturedFrame || isProcessing) return;
+    const imageToSend = capturedFrame;
+
+    setUploadFeedback('Sharing captured photo with VR Doctor for clinical examination...');
+
+    // Save in uploadedImage state for UI preview & sidebar
+    const captureTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setUploadedImage({
+      name: `Camera-Capture-${captureTimestamp}.jpg`,
+      preview: imageToSend,
+      size: Math.round((imageToSend.length * 3) / 4)
+    });
+
+    try {
       let token = null;
       try { token = await getIdToken(); } catch (_) {}
 
       const res = await analyzeVision(
-        frameBase64,
-        'Please describe visible clinical observations (e.g., skin rash, eye redness, facial swelling) in the active response language. Maintain triage precautions.',
+        imageToSend,
+        'Please describe visible clinical observations (e.g., skin rash, throat redness, facial swelling, cuts, or lesions) in the active response language. Provide your triage observation in a single conversational, reassuring paragraph.',
         token
       );
 
-      setUploadFeedback('Observation recorded from camera frame');
-      if (isMicOn && res?.observation) {
+      setUploadFeedback('Doctor examined the photo and is speaking observations...');
+      if (res?.observation) {
         speakAiResponse(res.observation);
       }
-      setTimeout(() => setUploadFeedback(''), 4000);
+      setTimeout(() => setUploadFeedback(''), 5000);
+
+      // Clear captured frame
+      setCapturedFrame(null);
+
+      // Stop camera after successful capture and confirmation
+      stopCamera();
     } catch (err) {
-      setUploadFeedback(`Frame analysis error: ${err.message || 'Service unavailable'}`);
+      console.error('Analysis error:', err);
+      setUploadFeedback(`Analysis error: ${err.message || 'Service unavailable'}`);
       setTimeout(() => setUploadFeedback(''), 5000);
     }
   };
@@ -445,51 +508,132 @@ export default function VirtualDoctor() {
                 </span>
               </div>
 
-              {/* 3. Small Floating Patient Camera Preview in the top-right corner */}
-              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 w-28 sm:w-36 md:w-44 aspect-[4/3] rounded-2xl overflow-hidden border-2 border-white/90 shadow-2xl bg-zinc-800 backdrop-blur-md transition-all">
+              {/* 3. Floating Patient Camera Preview in the top-right corner */}
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 w-36 sm:w-48 md:w-60 aspect-[4/3] rounded-2xl overflow-hidden border-2 border-white/90 shadow-2xl bg-zinc-900/95 backdrop-blur-md transition-all z-20">
                 {isCameraOn ? (
-                  <>
-                    {patientCameraStream ? (
-                      <video
-                        ref={patientVideoRef}
-                        autoPlay
-                        muted
-                        playsInline
+                  capturedFrame ? (
+                    /* Captured Image Preview State with Retake & Confirm & Share */
+                    <div className="relative w-full h-full bg-black flex flex-col justify-between">
+                      <img
+                        src={capturedFrame}
+                        alt="Captured patient camera frame"
                         className="w-full h-full object-cover"
                       />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-800 text-white p-2 text-center">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mb-1" />
-                        <span className="text-[10px] font-semibold">Camera Active</span>
+                      {/* Top Badge: Preview */}
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-[10px] font-bold text-emerald-400 border border-emerald-500/30 flex items-center gap-1 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Preview</span>
                       </div>
-                    )}
+
+                      {/* Bottom Action Buttons: Retake and Confirm & Share */}
+                      <div className="absolute bottom-2 inset-x-2 flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          id="retake-capture-btn"
+                          onClick={handleRetakeCapture}
+                          disabled={isProcessing}
+                          className="flex-1 py-1.5 px-2 rounded-lg bg-zinc-800/90 hover:bg-zinc-700 backdrop-blur-md text-[10px] font-semibold text-zinc-200 hover:text-white flex items-center justify-center gap-1 border border-white/20 transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                          title="Discard frame and retake"
+                        >
+                          <RotateCcw className="w-3 h-3 text-zinc-300" />
+                          <span>Retake</span>
+                        </button>
+                        <button
+                          type="button"
+                          id="confirm-share-capture-btn"
+                          onClick={handleConfirmAndShare}
+                          disabled={isProcessing}
+                          className="flex-1 py-1.5 px-2 rounded-lg bg-[#16865B] hover:bg-[#116B49] backdrop-blur-md text-[10px] font-semibold text-white flex items-center justify-center gap-1 shadow-md transition-all active:scale-95 disabled:opacity-50"
+                          title="Confirm and share photo with VR Doctor"
+                        >
+                          {isProcessing ? (
+                            <>
+                              <Loader2 className="w-3 h-3 animate-spin text-white" />
+                              <span>Sharing...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-3 h-3 text-white" />
+                              <span>Confirm</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Live Camera Preview State with Capture Button */
+                    <>
+                      {patientCameraStream ? (
+                        <video
+                          ref={patientVideoRef}
+                          autoPlay
+                          muted
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-900 text-white p-2 text-center">
+                          <Loader2 className="w-5 h-5 text-emerald-400 animate-spin mb-1" />
+                          <span className="text-[10px] font-semibold">Starting camera...</span>
+                        </div>
+                      )}
+
+                      {/* Live indicator badge */}
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[9px] font-semibold text-emerald-400 flex items-center gap-1 border border-emerald-500/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                        <span>Live Camera</span>
+                      </div>
+
+                      {/* Updated Button: 'Capture' (Previous: 'Scan Frame') */}
+                      <button
+                        type="button"
+                        id="capture-camera-frame-btn"
+                        data-testid="scan-camera-frame-btn"
+                        onClick={handleCaptureFrame}
+                        disabled={cooldown > 0 || isProcessing}
+                        className="absolute bottom-2 inset-x-2 py-1.5 px-2 rounded-lg bg-[#16865B] hover:bg-[#116B49] backdrop-blur-md text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-all disabled:opacity-60 shadow-md active:scale-95"
+                        title="Capture current camera frame"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                            <span>Processing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="w-3.5 h-3.5 text-white" />
+                            <span>Capture</span>
+                          </>
+                        )}
+                      </button>
+                    </>
+                  )
+                ) : cameraError ? (
+                  /* Camera Error State */
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-red-950/90 text-white p-2.5 text-center">
+                    <AlertCircle className="w-5 h-5 text-red-400 mb-1" />
+                    <span className="text-[10px] font-bold text-red-200 leading-tight">Camera Unavailable</span>
+                    <span className="text-[9px] text-red-300 mt-1 line-clamp-2 leading-tight px-1">{cameraError}</span>
                     <button
                       type="button"
-                      id="scan-camera-frame-btn"
-                      onClick={handleScanFrame}
-                      disabled={cooldown > 0 || isProcessing}
-                      className="absolute bottom-1.5 inset-x-1.5 py-1 px-1.5 rounded-lg bg-black/70 hover:bg-black/90 backdrop-blur-md text-[10px] font-semibold text-white flex items-center justify-center gap-1 transition-all disabled:opacity-60 shadow-xs active:scale-95"
-                      title="Analyze frame with Qwen2.5-VL 3B"
+                      onClick={toggleCamera}
+                      className="mt-2 px-2.5 py-1 rounded bg-white/20 hover:bg-white/30 text-[10px] text-white font-medium transition"
                     >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
-                          <span>Analyzing...</span>
-                        </>
-                      ) : cooldown > 0 ? (
-                        <span>Wait {cooldown}s</span>
-                      ) : (
-                        <>
-                          <Scan className="w-3 h-3 text-emerald-400" />
-                          <span>Scan Frame</span>
-                        </>
-                      )}
+                      Retry Camera
                     </button>
-                  </>
+                  </div>
                 ) : (
+                  /* Camera Off State */
                   <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-900/90 text-white p-2 text-center">
                     <VideoOff className="w-5 h-5 text-zinc-400 mb-1" />
                     <span className="text-[10px] text-zinc-400">Camera Off</span>
+                    <button
+                      type="button"
+                      onClick={toggleCamera}
+                      className="mt-1.5 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] text-zinc-200 border border-white/10 transition"
+                    >
+                      Turn On
+                    </button>
                   </div>
                 )}
               </div>
@@ -650,6 +794,33 @@ export default function VirtualDoctor() {
                       <span className={`w-1 bg-[#16865B] rounded-full ${isAiSpeaking ? 'h-3 animate-voice-wave-1' : 'h-3.5'}`} />
                     </div>
                   </button>
+
+                  {/* Refresh Memory Button with status feedback */}
+                  <div className="flex items-center gap-1.5 pl-2 border-l border-gray-200">
+                    {refreshFeedback && (
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                        refreshFeedback.status === 'success' ? 'bg-emerald-100 text-emerald-800' :
+                        refreshFeedback.status === 'error' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        {refreshFeedback.message}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      id="vr-refresh-memory-btn"
+                      onClick={async () => {
+                        let token = null;
+                        try { token = await getIdToken(); } catch (_) {}
+                        await refreshMemory(token);
+                      }}
+                      disabled={isRefreshingMemory}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 hover:bg-[#E8F5EE] border border-[#E4EBE6] text-[#172B24] hover:text-[#16865B] shadow-2xs transition active:scale-95 disabled:opacity-50"
+                      title="Clear active consultation memory and start a fresh AI context"
+                    >
+                      <RefreshCw className={`w-3 h-3 text-[#16865B] ${isRefreshingMemory ? 'animate-spin' : ''}`} />
+                      <span>Refresh</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 

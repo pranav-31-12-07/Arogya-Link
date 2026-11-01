@@ -1,0 +1,18 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: test_s11_mr
+Created At: 2026-10-31 15:12:31 UTC
+=====================================
+
+[2026-10-31 15:12:31 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: Marathi] माझे डोके दुखत आहे
+
+[2026-10-31 15:12:39 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[Marathi] हे, माझे डोके दुखत आहे. माझ्या समाजातील आपणांच्या आवाजांचे वाट ठेवत आहे. आपण कोणत्याही दुख आहे? ते निसर्ग आणि शरीराचे अनुभव आहे? या दुखांना आपण कोणत्याही मदत करायचे आहे?

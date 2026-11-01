@@ -1,0 +1,257 @@
+AAROGYA LINK - CONSULTATION CONTEXT
+Consultation ID: AL-98421
+Created At: 2026-10-31 15:22:35 UTC
+=====================================
+
+[2026-10-31 15:22:35 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey I am Pranav and I am feeling irritation and burning in my leg, can u tell me why? [Image Attached for Analysis]
+
+[2026-10-31 15:23:20 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello Pranav, I'm sorry to hear that you're experiencing irritation and burning in your leg. Let's start by discussing what exactly you mean by "leg." Are you referring to your thigh, your calf, or possibly your foot or ankle? It's important to have this information to provide you with the most accurate advice.
+
+Additionally, could you describe the location of the irritation and burning? Are they localized to one area, or do they spread out? Also, how long have you been experiencing these symptoms, and have they been getting worse or better over time?
+
+Thank you for sharing this information.
+
+[2026-10-31 15:23:38 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello
+
+[2026-10-31 15:23:42 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! I'm here to help you with your health concerns. Could you please describe what you're experiencing in more detail? Specifically, where exactly is the irritation and burning felt, and how long have you been feeling this way?
+
+[2026-10-31 15:23:57 UTC]
+Mode: VIDEO
+Speaker: SYSTEM
+Type: VISUAL_OBSERVATION
+Content:
+[Language: English] Vision Analysis Observation: I see a close-up image of a foot with some skin lesions and scaling on the toes. The skin appears to be dry and possibly irritated. It's important to note that I am not a medical professional, but this could potentially be a sign of a fungal infection or psoriasis. For a proper diagnosis, it would be best to consult a healthcare provider who can examine the condition in person. If you have any other symptoms or concerns, please let me know.
+
+[2026-10-31 15:25:31 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Thank you for the help
+
+[2026-10-31 15:25:34 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] You're welcome! I'm glad I could help. If you have any more questions or if the symptoms get worse or change, please don't hesitate to reach out. Take care and stay safe.
+
+[2026-11-01 02:14:32 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey
+
+[2026-11-01 02:17:06 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hi
+
+[2026-11-01 02:21:25 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hi
+
+[2026-11-01 02:22:59 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey I am Pranav Shah
+
+[2026-11-01 02:26:55 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey I am Sahil. I am having pain in my right foot.
+
+[2026-11-01 02:27:00 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello Pranav Shah and Sahil. It's nice to meet you. I understand you're experiencing pain in your right foot. Could you please describe the pain in more detail? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:27:16 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] hi
+
+[2026-11-01 02:27:20 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello! I'm here to help. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:27:30 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hey I am Pranav Shah. I am having pain in my right foot.
+
+[2026-11-01 02:27:34 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello Pranav Shah. I understand you are experiencing pain in your right foot. Could you please describe the pain in more detail? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:43:03 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello
+
+[2026-11-01 02:43:16 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:43:16 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello
+
+[2026-11-01 02:43:19 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:43:42 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hi
+
+[2026-11-01 02:43:47 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:45:09 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hi
+
+[2026-11-01 02:45:14 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:45:29 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I am Pranav and I am feeling pain in my right foot [Image Attached for Analysis]
+
+[2026-11-01 02:46:17 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Thank you for sharing the image. I can see that you have a red and swollen area on your right foot, specifically around the toe. This could be indicative of a condition such as a fungal infection, a skin irritation, or possibly an allergic reaction. It's important to note that this is just a preliminary assessment based on the image, and a physical examination by a healthcare professional would be necessary for a definitive diagnosis. 
+
+Could you please describe the pain in more detail? When did it start, and how severe is it? Also, have you noticed any other symptoms or changes in your foot, such as swelling, redness, or discharge? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:46:35 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello
+
+[2026-11-01 02:46:42 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. I'm here to help you with your health concerns. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:47:10 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Uh the pain started from yesterday but also I have one more complaint
+
+[2026-11-01 02:47:16 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. I'm here to help you with your health concerns. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:57:11 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hi I am Pranav and I am feeling burning in my right foot. [Image Attached for Analysis]
+
+[2026-11-01 02:58:07 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Thank you for sharing the image. I can see that you have a red and swollen area on your right foot, specifically around the toe. This could be indicative of a condition such as a fungal infection, a skin irritation, or possibly an allergic reaction. It's important to note that this is just a preliminary assessment based on the image, and a physical examination by a healthcare professional would be necessary for a definitive diagnosis.
+
+Could you please describe the pain in more detail? When did it start, and how severe is it? Also, have you noticed any other symptoms or changes in your foot, such as swelling, redness, or discharge? This information will help me provide you with a more accurate assessment.
+
+[2026-11-01 02:58:25 UTC]
+Mode: DOCTOR
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] Hello
+
+[2026-11-01 02:58:32 UTC]
+Mode: DOCTOR
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Hello. I'm here to help you with your health concerns. Could you please describe the pain in your right foot? When did it start, and how severe is it? Also, have you noticed any swelling, redness, or other changes in the foot? This information will help me provide you with a more accurate assessment.

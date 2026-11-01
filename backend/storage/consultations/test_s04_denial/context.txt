@@ -1,0 +1,33 @@
+AAROGYA LINK - CONSULTATION CONTEXT (RECONSTRUCTED)
+Consultation ID: test_s04_denial
+Reconstructed At: 2026-10-31 13:08:07 UTC
+Total Events: 0
+=====================================
+
+[2026-10-31 13:08:09 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] I have a mild throat ache, but I definitely do not have any fever.
+
+[2026-10-31 13:08:11 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] Thank you for sharing that information with me. Could you tell me when this pain started, how intense it feels, and if it spreads to any other areas?
+
+[2026-10-31 13:08:14 UTC]
+Mode: TEXT
+Speaker: PATIENT
+Type: MESSAGE
+Content:
+[Language: English] What symptoms did I say I had?
+
+[2026-10-31 13:08:17 UTC]
+Mode: TEXT
+Speaker: ASSISTANT
+Type: RESPONSE
+Content:
+[English] I'm sorry, but I'm not sure what symptoms you're referring to. Could you please provide more details about the symptoms you mentioned? For example, could you tell me when this pain first started, how intense it feels, and if it spreads anywhere else?
